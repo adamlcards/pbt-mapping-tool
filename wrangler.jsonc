@@ -1,0 +1,21 @@
+{
+  // Cloudflare's "Workers & Pages" flow now creates a Worker by default, and a
+  // Worker deploy runs `wrangler deploy`. Without this file Wrangler tries to
+  // auto-detect the framework, finds Vite 5, and refuses because its automatic
+  // configuration needs Vite 6 and the Cloudflare Vite plugin.
+  //
+  // None of that machinery is wanted here. This is a static site: there is no
+  // server-side code at all. Declaring the built output as assets says exactly
+  // that, and skips framework detection completely.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pbt-mapping-tool",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    // Vite writes here, and public/_headers is copied in alongside the build,
+    // so the Content-Security-Policy ships with it.
+    "directory": "./dist",
+    // The app is a single page with no client-side routing, so anything that is
+    // not a real file should still return the app rather than a bare 404.
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -180,17 +180,30 @@ git push -u origin main
 
 The branch is already named `main`, so there is no need to rename it.
 
-**3. Connect Cloudflare Pages.**
+**3. Connect Cloudflare.**
 
-- dash.cloudflare.com → Workers & Pages → Create → Pages → Connect to Git
+- dash.cloudflare.com → Workers & Pages → Create → Connect to Git
 - Pick the repository
-- Framework preset: **None**
 - Build command: `npm run build`
-- Build output directory: `dist`
 - Environment variables: none
 - Save and Deploy
 
-It builds in about a minute and gives you `pbt-mapping-tool.pages.dev`.
+Cloudflare's current flow creates a **Worker** rather than a Pages project, even
+though this is a purely static site. That is fine, and `wrangler.jsonc` in the
+repository tells it so: the built `dist/` folder is declared as static assets,
+which skips Wrangler's framework auto-detection.
+
+Without that file the build succeeds and the *deploy* fails with:
+
+```
+[ERROR] The version of Vite used in the project ("5.4.21") cannot be
+automatically configured. Please update the Vite version to at least ...
+```
+
+That error is about Cloudflare's own Vite plugin, which this project does not
+use and does not need. The fix is the config file, not a Vite upgrade.
+
+It builds in about a minute and gives you a `*.workers.dev` URL.
 
 **Then check the security header actually landed**, since this is the one thing
 that fails silently:

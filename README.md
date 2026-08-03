@@ -103,7 +103,7 @@ privacy claim visible rather than something to take on trust.
 
 ## Deploying
 
-The build is fully static. See [DEPLOY.md](../DEPLOY.md).
+The build is fully static. See [DEPLOY.md](DEPLOY.md).
 
 ## Study mode
 

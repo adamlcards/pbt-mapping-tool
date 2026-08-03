@@ -1,0 +1,17 @@
+# Cloudflare Pages / Netlify security headers.
+#
+# The Content-Security-Policy is deliberately strict and is also a promise kept
+# honest by the browser: connect-src 'none' means this page *cannot* make a
+# network request even if a future change tried to. That is the technical
+# backing for "nothing leaves your device", and it is worth more than the claim.
+#
+# NOTE FOR THE STUDY DEPLOYMENT: study mode posts to a server, so that build
+# must relax connect-src to the endpoint, e.g.
+#   connect-src https://study-api.example.org
+# Leave this file exactly as it is for the public deployment.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  X-Frame-Options: DENY

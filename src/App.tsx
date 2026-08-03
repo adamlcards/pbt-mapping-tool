@@ -776,7 +776,7 @@ export default function App() {
                   const svg = graphApi.current?.svg();
                   if (svg) download(`${safeFilename(network.meta.title)}.svg`, svg, 'image/svg+xml');
                 }],
-                ['Print / PDF', () => window.print()],
+                ['Print / PDF', () => graphApi.current?.print(network.meta.title)],
               ] as [string, () => void][]
             ).map(([label, fn]) => (
               <button key={label} className="btn" onClick={fn}>

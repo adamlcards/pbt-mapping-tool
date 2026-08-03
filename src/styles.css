@@ -320,7 +320,11 @@ kbd {
 /* ---------- print ---------- */
 
 @media print {
-  .toolbar, .topbar, .tool-hint, .side-panel, .guided, .toast { display: none !important; }
+  /* Export -> Print renders the vector into a hidden frame instead of printing
+     this page, because a canvas prints clipped and at the wrong scale. These
+     rules only matter if someone presses Cmd+P directly. */
+  .toolbar, .topbar, .tool-hint, .side-panel, .guided, .toast,
+  .modal-backdrop, .modal { display: none !important; }
   .workspace, .graph { height: 100vh; }
   body { background: #fff; }
 }

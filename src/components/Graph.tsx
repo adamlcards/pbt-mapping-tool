@@ -23,6 +23,7 @@ export interface GraphApi {
   tidy: () => void;
   pngDataUrl: (opts: { blackAndWhite: boolean; scale: number }) => string;
   svg: () => string;
+  print: (title: string) => void;
 }
 
 /**
@@ -118,6 +119,7 @@ export function Graph({
         return url;
       },
       svg: () => buildSvg(useStore.getState().network),
+      print: (title) => printMap(buildSvg(useStore.getState().network), title),
     });
 
     // The grid is painted as a CSS background on the container rather than as
@@ -555,6 +557,56 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
       style: { 'line-color': '#b8860b', 'target-arrow-color': '#b8860b', width: 4 } as cytoscape.Css.Edge,
     },
   ];
+}
+
+/**
+ * Print by rendering the vector into a hidden frame, rather than printing the
+ * page.
+ *
+ * Printing the page directly does not work: the map lives in a <canvas> drawn
+ * at screen resolution and at the size of the browser window, so on a sheet of
+ * A4 it comes out clipped, scaled wrong, and with a grey background where the
+ * canvas ends. Any open dialog printed along with it too.
+ *
+ * The SVG is already generated for export, is resolution-independent, and
+ * contains only the map. An iframe is used rather than a popup window because
+ * popup blockers routinely eat window.open even from a click.
+ */
+function printMap(svg: string, title: string): void {
+  const existing = document.getElementById('print-frame');
+  existing?.remove();
+
+  const frame = document.createElement('iframe');
+  frame.id = 'print-frame';
+  frame.setAttribute('aria-hidden', 'true');
+  frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
+  document.body.appendChild(frame);
+
+  const doc = frame.contentDocument;
+  if (!doc) return;
+
+  doc.open();
+  doc.write(
+    `<!doctype html><html><head><meta charset="utf-8"><title>${escapeXml(title)}</title>` +
+      `<style>` +
+      `@page { margin: 14mm; }` +
+      `body { font-family: system-ui, -apple-system, sans-serif; margin: 0; color: #15181c; }` +
+      `h1 { font-size: 16pt; margin: 0 0 2mm; }` +
+      `p.meta { font-size: 9pt; color: #5f6672; margin: 0 0 6mm; }` +
+      `svg { max-width: 100%; height: auto; }` +
+      `</style></head><body>` +
+      `<h1>${escapeXml(title)}</h1>` +
+      `<p class="meta">${escapeXml(new Date().toLocaleString())}</p>` +
+      svg +
+      `</body></html>`,
+  );
+  doc.close();
+
+  // Give the frame a moment to lay the SVG out before opening the dialog.
+  setTimeout(() => {
+    frame.contentWindow?.focus();
+    frame.contentWindow?.print();
+  }, 250);
 }
 
 /** Vector export. Cytoscape only produces raster, and journals want vector. */

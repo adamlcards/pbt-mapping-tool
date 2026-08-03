@@ -189,3 +189,69 @@ describe('deepClone fallback', () => {
     }
   });
 });
+
+describe('share links stay short enough to survive being pasted', () => {
+  it('is a fraction of the old size, because ids are not repeated', () => {
+    const net = createNetwork('Worry and sleep cycle');
+    // A realistic six-box map with ten links.
+    const labels = [
+      'Criticism at work',
+      'Worry about job security',
+      'Difficulty sleeping',
+      'Fatigue',
+      'Exercise',
+      'Social withdrawal',
+    ];
+    net.nodes = labels.map((l) => createNode({ label: l, position: { x: 100, y: 100 } }));
+    const pairs: [number, number][] = [
+      [0, 1], [1, 2], [2, 1], [2, 3], [3, 1], [4, 3], [4, 1], [3, 4], [5, 1], [5, 4],
+    ];
+    net.edges = pairs.map(([a, b]) => createEdge(net.nodes[a]!.id, net.nodes[b]!.id, 'increases', 2));
+
+    const packed = packNetwork(net);
+    // The v1 format produced roughly 2,900 characters for this map.
+    expect(packed.length).toBeLessThan(900);
+
+    const restored = unpackNetwork(packed)!;
+    expect(restored.nodes.map((n) => n.label)).toEqual(labels);
+    expect(restored.edges).toHaveLength(10);
+  });
+
+  it('still reads a link made in the original format', () => {
+    // Nobody should lose a link they already sent someone.
+    const v1 = {
+      v: 3,
+      t: 'Old link',
+      n: [
+        ['n_aaa', 'Worry', 'cognition', 10, 20, 8, null, 'proposed'],
+        ['n_bbb', 'Poor sleep', 'biophysiological', 30, 40, null, null, null],
+      ],
+      e: [['e_1', 'n_aaa', 'n_bbb', 'increases', 3, 'unhelpful', null]],
+    };
+    const encoded = btoa(JSON.stringify(v1)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const restored = unpackNetwork(encoded)!;
+    expect(restored).not.toBeNull();
+    expect(restored.nodes[0]!.label).toBe('Worry');
+    expect(restored.nodes[0]!.severity).toBe(8);
+    expect(restored.nodes[0]!.trial).toBe('proposed');
+    expect(restored.edges[0]!.strength).toBe(3);
+    expect(restored.edges[0]!.valence).toBe('unhelpful');
+  });
+
+  it('keeps every field through the compact round trip', () => {
+    const net = awkwardNetwork();
+    net.nodes[0]!.trial = 'adopted';
+    net.edges[1]!.trial = 'ruledOut';
+    const restored = unpackNetwork(packNetwork(net))!;
+    expect(restored.nodes.map((n) => n.label)).toEqual([
+      'Worry about money, and work',
+      'She said "just relax"',
+      '睡眠障害',
+    ]);
+    expect(restored.nodes[0]!.trial).toBe('adopted');
+    expect(restored.nodes[0]!.severity).toBe(8);
+    expect(restored.nodes[2]!.category).toBe('context');
+    expect(restored.edges[1]!.trial).toBe('ruledOut');
+    expect(restored.edges.map((e) => e.weight).sort((a, b) => a - b)).toEqual([-2, 1, 3]);
+  });
+});

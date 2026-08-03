@@ -160,13 +160,28 @@ The repository is already initialised and committed locally. Three steps remain.
 not let GitHub add a README, licence or `.gitignore` — they already exist here
 and would conflict.
 
-**2. Push it.** From the `app` folder:
+**2. Push it.** From the `app` folder. Replace `‹username›` with your actual
+GitHub username — the part after `github.com/` in your profile URL. Leaving the
+placeholder in produces `Repository not found`, which looks alarming and means
+nothing worse than a typo.
 
 ```bash
-git remote add origin https://github.com/YOUR-USERNAME/pbt-mapping-tool.git
-git branch -M main
+cd "/Users/xiang/Desktop/Study 7/PBT Mapping Tool/app"
+git remote add origin https://github.com/‹username›/pbt-mapping-tool.git
 git push -u origin main
 ```
+
+If you already ran that once with the placeholder still in, git will say
+`remote origin already exists`. Point it at the right address instead of adding
+another:
+
+```bash
+git remote set-url origin https://github.com/‹username›/pbt-mapping-tool.git
+git remote -v      # check it reads back correctly before pushing
+git push -u origin main
+```
+
+The branch is already named `main`, so there is no need to rename it.
 
 **3. Connect Cloudflare Pages.**
 

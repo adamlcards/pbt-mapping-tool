@@ -182,7 +182,10 @@ export function Graph({
       if (highlight.length > 0) {
         const set = new Set(highlight);
         cy.elements().forEach((el) => {
-          el.addClass(set.has(el.id()) ? 'highlighted' : 'dim');
+          // A phantom backward-arrowhead edge has no id of its own in the
+          // network data, so it follows whatever state its real edge has.
+          const key = (el.data('mirrorOf') as string | undefined) ?? el.id();
+          el.addClass(set.has(key) ? 'highlighted' : 'dim');
         });
       }
     });
@@ -414,6 +417,7 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
     // When the two directions disagree about whether the link helps, neither
     // claim should win, so the line stays neutral.
     const valence = back && back.valence !== e.valence ? 'neutral' : e.valence;
+    const colour = valenceColour(valence, theme);
 
     els.push({
       group: 'edges',
@@ -423,25 +427,45 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
         target: e.target,
         pairedWith: back?.id ?? null,
         // The line itself can only carry one thickness, so it takes the
-        // stronger of the two directions. But when the directions differ in
-        // strength, that difference has to show up *somewhere* — otherwise a
-        // 3-strength/1-strength reciprocal link looks identical to a
-        // 1-strength/1-strength one. Each arrowhead is scaled to its own
-        // direction's strength instead of both sharing the line's max.
+        // stronger of the two directions.
         width: widthFor(Math.max(e.strength, back?.strength ?? 0)),
-        targetArrowScale: arrowFor(e.strength),
-        sourceArrowScale: arrowFor(back?.strength ?? e.strength),
-        colour: valenceColour(valence, theme),
+        arrowScale: arrowFor(e.strength),
+        colour,
       },
       classes: [
         e.direction,
         e.trial ? `trial-${e.trial}` : back?.trial ? `trial-${back.trial}` : '',
         back ? 'reciprocal' : '',
-        back ? (back.direction === 'increases' ? 'back-increases' : 'back-decreases') : '',
       ]
         .filter(Boolean)
         .join(' '),
     });
+
+    // Cytoscape gives an edge exactly one arrow-scale, shared by every
+    // arrowhead defined on it — so a single edge can't have a 3-strength head
+    // at one end and a 1-strength head at the other. The backward head is
+    // instead drawn on its own edge, invisible except for that one arrowhead,
+    // stacked exactly on the real line (curve-style: straight means Cytoscape
+    // does not auto-offset two edges sharing the same pair of nodes). `events:
+    // no` keeps it from intercepting clicks meant for the real edge.
+    if (back) {
+      els.push({
+        group: 'edges',
+        data: {
+          id: `${e.id}__back`,
+          source: e.source,
+          target: e.target,
+          arrowScale: arrowFor(back.strength),
+          colour,
+          // The highlight/dim pass (see the effect below) matches by element
+          // id against the network's own ids. This phantom edge has neither,
+          // so without this it would always read as "not highlighted" and
+          // sit dimmed even while the real line beside it is lit up.
+          mirrorOf: e.id,
+        },
+        classes: ['phantom-arrow', back.direction === 'increases' ? 'back-increases' : 'back-decreases'].join(' '),
+      });
+    }
   }
 
   return els;
@@ -521,8 +545,7 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
         'line-color': 'data(colour)',
         'target-arrow-color': 'data(colour)',
         'target-arrow-shape': 'triangle',
-        'target-arrow-scale': 'data(targetArrowScale)' as unknown as number,
-        'source-arrow-scale': 'data(sourceArrowScale)' as unknown as number,
+        'arrow-scale': 'data(arrowScale)' as unknown as number,
         'transition-property': 'line-color, opacity',
         'transition-duration': 150,
       } as cytoscape.Css.Edge,
@@ -531,11 +554,26 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
     // No colour dependency, so it survives a black-and-white printout.
     { selector: 'edge.increases', style: { 'target-arrow-fill': 'filled' } as cytoscape.Css.Edge },
     { selector: 'edge.decreases', style: { 'target-arrow-fill': 'hollow' } as cytoscape.Css.Edge },
-    // Reciprocal influence: one straight line, a head at each end, each head
-    // filled or hollow according to that direction.
+    // Reciprocal influence: one straight line, so a head at each end sits on
+    // the same axis instead of curving apart.
     {
       selector: 'edge.reciprocal',
-      style: { 'source-arrow-shape': 'triangle', 'source-arrow-color': 'data(colour)', 'curve-style': 'straight' } as cytoscape.Css.Edge,
+      style: { 'curve-style': 'straight' } as cytoscape.Css.Edge,
+    },
+    // The backward head lives on its own invisible edge (see makeElements)
+    // so its arrow-scale can differ from the forward head's.
+    {
+      selector: 'edge.phantom-arrow',
+      style: {
+        'curve-style': 'straight',
+        width: 0.0001,
+        'line-opacity': 0,
+        'target-arrow-shape': 'none',
+        'source-arrow-shape': 'triangle',
+        'source-arrow-color': 'data(colour)',
+        'arrow-scale': 'data(arrowScale)' as unknown as number,
+        events: 'no',
+      } as cytoscape.Css.Edge,
     },
     { selector: 'edge.back-increases', style: { 'source-arrow-fill': 'filled' } as cytoscape.Css.Edge },
     { selector: 'edge.back-decreases', style: { 'source-arrow-fill': 'hollow' } as cytoscape.Css.Edge },
@@ -562,7 +600,14 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
     },
     {
       selector: 'edge.highlighted',
-      style: { 'line-color': '#b8860b', 'target-arrow-color': '#b8860b', width: 4 } as cytoscape.Css.Edge,
+      style: {
+        'line-color': '#b8860b',
+        'target-arrow-color': '#b8860b',
+        // Needed so a highlighted reciprocal link's backward arrowhead (the
+        // phantom edge) turns gold too, not just the forward one.
+        'source-arrow-color': '#b8860b',
+        width: 4,
+      } as cytoscape.Css.Edge,
     },
   ];
 }
@@ -636,11 +681,21 @@ function buildSvg(net: PbtNetwork): string {
     '<rect width="100%" height="100%" fill="#ffffff"/>',
     '<defs>',
   ];
+  // The marker's rendered size (markerWidth/markerHeight) scales with
+  // strength; the path inside stays on the same 0-10 viewBox, so it just
+  // grows or shrinks as a whole rather than needing three separate drawings.
+  // This used to be a fixed 7x7 for every edge regardless of strength, so a
+  // 1-strength and a 3-strength link had identical arrowheads in every
+  // exported SVG/PDF, only differing in line thickness.
+  const markerSizeFor = (strength: number) => [5, 7, 9.5][strength - 1] ?? 7;
   for (const [name, colour] of Object.entries(VALENCE_COLOUR)) {
-    parts.push(
-      `<marker id="f-${name}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${colour}"/></marker>`,
-      `<marker id="h-${name}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0.5 0.5 L 9.5 5 L 0.5 9.5 z" fill="#ffffff" stroke="${colour}" stroke-width="1.4"/></marker>`,
-    );
+    for (const strength of [1, 2, 3]) {
+      const size = markerSizeFor(strength);
+      parts.push(
+        `<marker id="f-${name}-${strength}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="${size}" markerHeight="${size}" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${colour}"/></marker>`,
+        `<marker id="h-${name}-${strength}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="${size}" markerHeight="${size}" orient="auto-start-reverse"><path d="M 0.5 0.5 L 9.5 5 L 0.5 9.5 z" fill="#ffffff" stroke="${colour}" stroke-width="1.4"/></marker>`,
+      );
+    }
   }
   parts.push('</defs>');
 
@@ -650,7 +705,7 @@ function buildSvg(net: PbtNetwork): string {
     if (!s || !t) continue;
     const colour = VALENCE_COLOUR[e.valence];
     const w = [1.4, 2.4, 3.8][e.strength - 1] ?? 2;
-    const marker = e.direction === 'increases' ? `f-${e.valence}` : `h-${e.valence}`;
+    const marker = e.direction === 'increases' ? `f-${e.valence}-${e.strength}` : `h-${e.valence}-${e.strength}`;
     parts.push(
       `<line x1="${s.x}" y1="${s.y}" x2="${t.x}" y2="${t.y}" stroke="${colour}" stroke-width="${w}" marker-end="url(#${marker})"/>`,
     );

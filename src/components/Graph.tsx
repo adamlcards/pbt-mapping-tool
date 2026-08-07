@@ -422,8 +422,15 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
         source: e.source,
         target: e.target,
         pairedWith: back?.id ?? null,
+        // The line itself can only carry one thickness, so it takes the
+        // stronger of the two directions. But when the directions differ in
+        // strength, that difference has to show up *somewhere* — otherwise a
+        // 3-strength/1-strength reciprocal link looks identical to a
+        // 1-strength/1-strength one. Each arrowhead is scaled to its own
+        // direction's strength instead of both sharing the line's max.
         width: widthFor(Math.max(e.strength, back?.strength ?? 0)),
-        arrowScale: arrowFor(Math.max(e.strength, back?.strength ?? 0)),
+        targetArrowScale: arrowFor(e.strength),
+        sourceArrowScale: arrowFor(back?.strength ?? e.strength),
         colour: valenceColour(valence, theme),
       },
       classes: [
@@ -514,7 +521,8 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
         'line-color': 'data(colour)',
         'target-arrow-color': 'data(colour)',
         'target-arrow-shape': 'triangle',
-        'arrow-scale': 'data(arrowScale)' as unknown as number,
+        'target-arrow-scale': 'data(targetArrowScale)' as unknown as number,
+        'source-arrow-scale': 'data(sourceArrowScale)' as unknown as number,
         'transition-property': 'line-color, opacity',
         'transition-duration': 150,
       } as cytoscape.Css.Edge,

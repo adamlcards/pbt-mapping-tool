@@ -435,16 +435,43 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
     // direction's strength. Cytoscape does not auto-offset straight edges
     // that share the same two nodes, so they don't drift apart into a
     // curve.
+    // Each line otherwise runs the full distance between the boxes, straight
+    // through the *other* direction's arrowhead — most visibly on a hollow
+    // head, where the opposing line is drawn across the white triangle. The
+    // length an arrowhead reserves along its line is (width x arrow-scale x
+    // 2), so pulling each line's tail back by exactly the partner's arrow
+    // length makes both segments start and end at the same two points: they
+    // still overlap perfectly and read as one line, but neither now crosses
+    // the other's head.
+    const arrowSpan = (strength: number) => width * arrowFor(strength) * 2;
+
     els.push({
       group: 'edges',
-      data: { id: e.id, source: e.source, target: e.target, pairedWith: back?.id ?? null, width, arrowScale: arrowFor(e.strength), colour },
+      data: {
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        pairedWith: back?.id ?? null,
+        width,
+        arrowScale: arrowFor(e.strength),
+        srcInset: back ? arrowSpan(back.strength) : 0,
+        colour,
+      },
       classes: [e.direction, e.trial ? `trial-${e.trial}` : '', back ? 'reciprocal' : ''].filter(Boolean).join(' '),
     });
 
     if (back) {
       els.push({
         group: 'edges',
-        data: { id: back.id, source: back.source, target: back.target, width, arrowScale: arrowFor(back.strength), colour },
+        data: {
+          id: back.id,
+          source: back.source,
+          target: back.target,
+          width,
+          arrowScale: arrowFor(back.strength),
+          srcInset: arrowSpan(e.strength),
+          colour,
+        },
         classes: [back.direction, back.trial ? `trial-${back.trial}` : '', 'reciprocal'].filter(Boolean).join(' '),
       });
     }
@@ -548,7 +575,12 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
     // between the same two nodes into a curve, so they stay stacked.
     {
       selector: 'edge.reciprocal',
-      style: { 'curve-style': 'straight' } as cytoscape.Css.Edge,
+      style: {
+        'curve-style': 'straight',
+        // Start after the opposing arrowhead, so neither line is drawn
+        // through the other's head. See makeElements.
+        'source-distance-from-node': 'data(srcInset)' as unknown as number,
+      } as cytoscape.Css.Edge,
     },
     {
       selector: 'node.dim',

@@ -182,10 +182,7 @@ export function Graph({
       if (highlight.length > 0) {
         const set = new Set(highlight);
         cy.elements().forEach((el) => {
-          // A phantom backward-arrowhead edge has no id of its own in the
-          // network data, so it follows whatever state its real edge has.
-          const key = (el.data('mirrorOf') as string | undefined) ?? el.id();
-          el.addClass(set.has(key) ? 'highlighted' : 'dim');
+          el.addClass(set.has(el.id()) ? 'highlighted' : 'dim');
         });
       }
     });
@@ -415,50 +412,40 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
     drawn.add(e.id);
 
     // When the two directions disagree about whether the link helps, neither
-    // claim should win, so the line stays neutral.
+    // claim should win, so the shared line stays neutral. Each arrowhead's
+    // fill (solid/hollow) still comes from its own direction, independently.
     const valence = back && back.valence !== e.valence ? 'neutral' : e.valence;
     const colour = valenceColour(valence, theme);
-
-    // The visible line's thickness takes the stronger of the two directions
-    // — a single line can't taper along its length. But Cytoscape sizes an
-    // arrowhead as (edge width) x (arrow-scale), not arrow-scale alone. If an
-    // arrowhead lived on this edge, changing the *other* direction's strength
-    // would silently inflate this edge's shared width and, with it, this
-    // arrowhead's pixel size — even though this direction's own strength
-    // never changed. That is the "they sync together" bug. So on a
-    // reciprocal pair, this backbone edge carries no arrowhead of its own;
-    // both heads live on their own independently-sized carrier edges below,
-    // each with a fixed baseline width that has nothing to do with the
-    // shared line thickness.
+    // The line's thickness takes the stronger of the two directions — a
+    // single stroke can't taper along its length, so this is shared and
+    // identical on both edges below, deliberately.
     const width = widthFor(Math.max(e.strength, back?.strength ?? 0));
+
+    // Cytoscape gives an edge exactly one arrow-scale, applied to every
+    // arrowhead shape defined on it, and there is no way to make a line
+    // invisible without also zeroing its arrowheads' opacity (opacity and
+    // line-opacity both multiply straight into arrow opacity in the
+    // renderer — confirmed by reading Cytoscape's own drawing code, it isn't
+    // a documented style option). So a reciprocal pair can't be one edge
+    // with two heads, and it can't be a "real" edge plus an invisible
+    // "carrier" edge either. It's rendered instead as two fully ordinary,
+    // fully visible edges — sharing the same width, colour, and straight
+    // path (so they land exactly on top of each other and read as one
+    // line) — each carrying just one arrowhead, sized only by its own
+    // direction's strength. Cytoscape does not auto-offset straight edges
+    // that share the same two nodes, so they don't drift apart into a
+    // curve.
     els.push({
       group: 'edges',
       data: { id: e.id, source: e.source, target: e.target, pairedWith: back?.id ?? null, width, arrowScale: arrowFor(e.strength), colour },
-      classes: [
-        e.direction,
-        e.trial ? `trial-${e.trial}` : back?.trial ? `trial-${back.trial}` : '',
-        back ? 'reciprocal' : '',
-      ]
-        .filter(Boolean)
-        .join(' '),
+      classes: [e.direction, e.trial ? `trial-${e.trial}` : '', back ? 'reciprocal' : ''].filter(Boolean).join(' '),
     });
 
     if (back) {
-      // Fixed, shared baseline so the only thing distinguishing the two
-      // heads is arrowScale, never the line's width.
-      const HEAD_BASE = 2.6;
-      // Forward head: its own carrier, invisible line, scaled to e's own
-      // strength only.
       els.push({
         group: 'edges',
-        data: { id: `${e.id}__fwd`, source: e.source, target: e.target, width: HEAD_BASE, arrowScale: arrowFor(e.strength), colour, mirrorOf: e.id },
-        classes: ['phantom-arrow-target', e.direction === 'increases' ? 'increases' : 'decreases'].join(' '),
-      });
-      // Backward head: same idea, scaled to back's own strength only.
-      els.push({
-        group: 'edges',
-        data: { id: `${e.id}__back`, source: e.source, target: e.target, width: HEAD_BASE, arrowScale: arrowFor(back.strength), colour, mirrorOf: e.id },
-        classes: ['phantom-arrow-source', back.direction === 'increases' ? 'back-increases' : 'back-decreases'].join(' '),
+        data: { id: back.id, source: back.source, target: back.target, width, arrowScale: arrowFor(back.strength), colour },
+        classes: [back.direction, back.trial ? `trial-${back.trial}` : '', 'reciprocal'].filter(Boolean).join(' '),
       });
     }
   }
@@ -549,47 +536,20 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
     // No colour dependency, so it survives a black-and-white printout.
     { selector: 'edge.increases', style: { 'target-arrow-fill': 'filled' } as cytoscape.Css.Edge },
     { selector: 'edge.decreases', style: { 'target-arrow-fill': 'hollow' } as cytoscape.Css.Edge },
-    // Reciprocal influence: one straight line, so a head at each end sits on
-    // the same axis instead of curving apart. It carries neither arrowhead
-    // itself — both live on their own carrier edges below — because an
-    // arrowhead's pixel size in Cytoscape is (edge width) x (arrow-scale),
-    // and this edge's width is shared between both directions. An arrowhead
-    // placed here would silently resize whenever the *other* direction's
-    // strength changed, even though this direction never did.
+    // Reciprocal influence: two ordinary, fully visible edges — one per
+    // direction, each with its own real id, own arrow-scale, own trial
+    // state — sharing the same width, colour, and straight path so they
+    // land exactly on top of each other and read as one line with a head at
+    // each end. (See makeElements for why: Cytoscape ties an invisible
+    // line's arrowhead opacity to the line's own opacity, so a "real edge +
+    // invisible carrier edge" split cannot produce a visible head on an
+    // invisible line — confirmed by reading the renderer source, not
+    // documented anywhere.) Cytoscape does not auto-offset straight edges
+    // between the same two nodes into a curve, so they stay stacked.
     {
       selector: 'edge.reciprocal',
-      style: { 'curve-style': 'straight', 'target-arrow-shape': 'none' } as cytoscape.Css.Edge,
+      style: { 'curve-style': 'straight' } as cytoscape.Css.Edge,
     },
-    // Both heads live on their own invisible carrier edges (see
-    // makeElements), each with a fixed baseline width that has nothing to do
-    // with the visible line's thickness — so arrow-scale is the only thing
-    // that varies between them, and each is driven only by its own
-    // direction's strength.
-    {
-      selector: 'edge.phantom-arrow-target, edge.phantom-arrow-source',
-      style: {
-        'curve-style': 'straight',
-        width: 'data(width)',
-        'line-opacity': 0,
-        'arrow-scale': 'data(arrowScale)' as unknown as number,
-        events: 'no',
-        // The base 'edge' selector defaults every edge to a target arrowhead.
-        // Each carrier needs exactly one head, so both shapes start off and
-        // the two selectors below turn one back on.
-        'target-arrow-shape': 'none',
-        'source-arrow-shape': 'none',
-      } as cytoscape.Css.Edge,
-    },
-    {
-      selector: 'edge.phantom-arrow-target',
-      style: { 'target-arrow-shape': 'triangle', 'target-arrow-color': 'data(colour)' } as cytoscape.Css.Edge,
-    },
-    {
-      selector: 'edge.phantom-arrow-source',
-      style: { 'source-arrow-shape': 'triangle', 'source-arrow-color': 'data(colour)' } as cytoscape.Css.Edge,
-    },
-    { selector: 'edge.back-increases', style: { 'source-arrow-fill': 'filled' } as cytoscape.Css.Edge },
-    { selector: 'edge.back-decreases', style: { 'source-arrow-fill': 'hollow' } as cytoscape.Css.Edge },
     {
       selector: 'node.dim',
       style: {
@@ -613,14 +573,7 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
     },
     {
       selector: 'edge.highlighted',
-      style: {
-        'line-color': '#b8860b',
-        'target-arrow-color': '#b8860b',
-        // Needed so a highlighted reciprocal link's backward arrowhead (the
-        // phantom edge) turns gold too, not just the forward one.
-        'source-arrow-color': '#b8860b',
-        width: 4,
-      } as cytoscape.Css.Edge,
+      style: { 'line-color': '#b8860b', 'target-arrow-color': '#b8860b', width: 4 } as cytoscape.Css.Edge,
     },
   ];
 }

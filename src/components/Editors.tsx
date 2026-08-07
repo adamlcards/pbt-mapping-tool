@@ -241,7 +241,22 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
       {alternate && onSwitchTo && (
         <p className="alt-direction">
           These two also influence each other the other way.{' '}
-          <button type="button" className="linkish" onClick={() => onSwitchTo(alternate.id)}>
+          <button
+            type="button"
+            className="linkish"
+            onClick={() => {
+              // Switching direction used to silently drop whatever was picked
+              // here without a click on Update — the dialog would jump to the
+              // other direction and this one's change just vanished, with no
+              // warning. Reported live as "both ends up the same value": one
+              // direction was set, switched away from before saving, and its
+              // pending choice never actually landed. Saving here first, the
+              // same thing Update itself would do, means the switch behaves
+              // like a normal save-and-continue instead of a silent discard.
+              if (strength !== null) onSave({ direction, strength, valence });
+              onSwitchTo(alternate.id);
+            }}
+          >
             Edit {alternate.sourceLabel} → {alternate.targetLabel}
           </button>
         </p>

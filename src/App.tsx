@@ -696,6 +696,15 @@ export default function App() {
 
       {editingEdge && (
         <EdgeEditor
+          // Without a key tied to the edge id, switching to the alternate
+          // direction (via the "Edit X -> Y" link below) reuses this same
+          // component instance instead of remounting it. Its internal
+          // direction/strength/valence state then keeps whatever was last
+          // clicked on the *previous* edge instead of resetting to the new
+          // edge's actual saved values — so the dialog silently shows and
+          // can save the wrong direction's data. This is what made both
+          // directions of a reciprocal link end up with the same strength.
+          key={editingEdge.id}
           sourceLabel={nodeLabel(editingEdge.source)}
           targetLabel={nodeLabel(editingEdge.target)}
           initial={editingEdge}

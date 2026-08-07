@@ -455,6 +455,13 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
           id: `${e.id}__back`,
           source: e.source,
           target: e.target,
+          // Cytoscape sizes an arrowhead as width x arrow-scale, not
+          // arrow-scale alone — so this can't be shrunk to near-zero to hide
+          // the line, or the arrowhead shrinks to nothing along with it. The
+          // line is instead hidden with line-opacity: 0 (a genuinely separate
+          // property), while width stays a normal, fixed baseline so only
+          // arrowScale carries the strength signal.
+          width: 2.6,
           arrowScale: arrowFor(back.strength),
           colour,
           // The highlight/dim pass (see the effect below) matches by element
@@ -566,7 +573,10 @@ function makeStyle(theme: 'light' | 'dark'): cytoscape.StylesheetStyle[] {
       selector: 'edge.phantom-arrow',
       style: {
         'curve-style': 'straight',
-        width: 0.0001,
+        // Arrowhead pixel size is width x arrow-scale in Cytoscape, so width
+        // has to stay a normal number here — line-opacity: 0 is what actually
+        // hides the line, not a near-zero width.
+        width: 'data(width)',
         'line-opacity': 0,
         'target-arrow-shape': 'none',
         'source-arrow-shape': 'triangle',

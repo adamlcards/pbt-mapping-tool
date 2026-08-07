@@ -8,7 +8,8 @@ import {
   safeFilename,
 } from '../../export/exporters';
 import { createEdge, createNetwork, createNode, createSnapshot } from '../../model/factory';
-import { packNetwork, unpackNetwork } from '../../persistence/share';
+import { decodeShare, encodeShare, packNetwork, unpackNetwork } from '../../persistence/share';
+import { EEMM_CATEGORIES } from '../../model/eemm';
 import type { PbtNetwork } from '../../model/types';
 import { deepClone } from '../../model/clone';
 
@@ -236,6 +237,55 @@ describe('share links stay short enough to survive being pasted', () => {
     expect(restored.nodes[0]!.trial).toBe('proposed');
     expect(restored.edges[0]!.strength).toBe(3);
     expect(restored.edges[0]!.valence).toBe('unhelpful');
+  });
+
+  it('compresses, and still reads back correctly', async () => {
+    const net = awkwardNetwork();
+    net.nodes[0]!.trial = 'adopted';
+    const plain = packNetwork(net);
+    const encoded = await encodeShare(net);
+    expect(encoded.startsWith('z')).toBe(true);
+    expect(encoded.length).toBeLessThan(plain.length);
+
+    const restored = (await decodeShare(encoded))!;
+    expect(restored.nodes.map((n) => n.label)).toEqual([
+      'Worry about money, and work',
+      'She said "just relax"',
+      '睡眠障害',
+    ]);
+    expect(restored.nodes[0]!.trial).toBe('adopted');
+    expect(restored.nodes[2]!.category).toBe('context');
+    expect(restored.edges.map((e) => e.weight).sort((a, b) => a - b)).toEqual([-2, 1, 3]);
+  });
+
+  it('still opens an uncompressed link, so nothing shared earlier breaks', async () => {
+    const net = awkwardNetwork();
+    const restored = (await decodeShare(packNetwork(net)))!;
+    expect(restored).not.toBeNull();
+    expect(restored.nodes).toHaveLength(3);
+    expect(restored.nodes[2]!.category).toBe('context');
+  });
+
+  it('returns null for a corrupted compressed link rather than throwing', async () => {
+    expect(await decodeShare('znot-real-deflate-data')).toBeNull();
+  });
+
+  it('keeps the category list frozen, because links store categories by index', () => {
+    // If EEMM_CATEGORIES is reordered or has an entry inserted, every link
+    // shared before that change decodes to the wrong categories — silently.
+    // This test is the tripwire: append only, never reorder.
+    expect([...EEMM_CATEGORIES]).toEqual([
+      'uncategorised',
+      'affect',
+      'cognition',
+      'attention',
+      'self',
+      'motivation',
+      'overtBehaviour',
+      'biophysiological',
+      'sociocultural',
+      'context',
+    ]);
   });
 
   it('keeps every field through the compact round trip', () => {

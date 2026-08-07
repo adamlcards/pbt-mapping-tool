@@ -13,7 +13,7 @@ import { TRIAL_LABEL, TRIAL_STATES, type TrialState } from './model/types';
 import { t } from './i18n/strings';
 import { parseNetwork } from './model/schema';
 import * as idb from './persistence/idb';
-import { buildShareLink, readShareFromUrl } from './persistence/share';
+import { buildShareLink, readShareFromUrl, type ShareLink } from './persistence/share';
 import { readStudyContext, syncToServer, flushOnUnload } from './study/study';
 import { buildTemplate, listTemplates } from './templates/templates';
 import {
@@ -154,7 +154,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const shared = readShareFromUrl();
+      const shared = await readShareFromUrl();
       if (shared) {
         store.replaceNetwork(shared, 'Open shared network');
         notify('Opened a shared network. It has not overwritten your saved work.');
@@ -872,8 +872,19 @@ export default function App() {
 
 function ShareDialog({ onClose }: { onClose: () => void }) {
   const network = useStore((s) => s.network);
-  const link = buildShareLink(network);
   const [copied, setCopied] = useState(false);
+  // Compressing the payload is asynchronous (CompressionStream), so the link
+  // arrives a tick after the dialog opens rather than during render.
+  const [link, setLink] = useState<ShareLink | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    buildShareLink(network).then((l) => {
+      if (!cancelled) setLink(l);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [network]);
 
   return (
     <Modal title="Share link" onClose={onClose} wide>
@@ -882,7 +893,9 @@ function ShareDialog({ onClose }: { onClose: () => void }) {
         content is never sent in the web request, so nothing is stored or logged anywhere. Anyone with the
         link can open and edit their own copy.
       </p>
-      {link.tooLong ? (
+      {!link ? (
+        <p className="muted small">Building the link…</p>
+      ) : link.tooLong ? (
         <p className="warn-box">
           This network is too large for a link ({link.length} characters). Export it as JSON and send the file
           instead.

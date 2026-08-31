@@ -123,6 +123,7 @@ export function Graph({
       autoungrabify: false,
     });
     cyRef.current = cy;
+    correctArrowGap(cy);
 
     cy.on('tap', (evt) => {
       if (evt.target === cy) handlers.current.onCanvasClick(evt.position);
@@ -375,6 +376,57 @@ function fitSoon(cy: Core): void {
   }, 60);
 }
 
+/**
+ * How long a triangular arrowhead actually is, measured along the line.
+ *
+ * Cytoscape's own numbers, read out of its source rather than guessed: the
+ * `triangle` shape's points span 0.3 along the line axis, and the shape is
+ * scaled by `getArrowWidth(width, scale)`, which is
+ * `max((width * 13.37) ^ 0.9, 29) * scale`. The 29 is a floor, which is why
+ * thin lines come off worst — their heads do not shrink below it.
+ */
+export function arrowHeadLength(width: number, scale: number): number {
+  return Math.max(Math.pow(width * 13.37, 0.9), 29) * scale * 0.3;
+}
+
+/**
+ * Stop every line being drawn inside its own arrowhead.
+ *
+ * Cytoscape ends the line `width * arrowScale * 2` short of the box — its
+ * `standardGap` — but draws the head `0.3 * getArrowWidth(...)` long. Those are
+ * two unrelated formulas, and the second is the larger for every line width
+ * this tool uses (in fact for any width below about 84), so the line always ran
+ * some way into the head. Against a *filled* head that is invisible, black on
+ * black, which is why it went unnoticed for so long. Against a *hollow* one —
+ * which is how this tool draws "decreases" — it is a black line ruled across
+ * the white triangle.
+ *
+ * The gap is not exposed as a style. It is, however, a method on an arrow-shape
+ * object that `registerArrowShapes` hangs off the renderer INSTANCE
+ * (`this.arrowShapes = {}`), so correcting it here changes this one graph and
+ * neither the library nor any other instance.
+ *
+ * If a future Cytoscape moves this, the failure is cosmetic and announces
+ * itself — the old overlap returns — so it degrades rather than breaks.
+ */
+function correctArrowGap(cy: Core): void {
+  try {
+    const shapes = (
+      cy as unknown as {
+        renderer(): { arrowShapes?: Record<string, { gap?: (e: unknown) => number }> };
+      }
+    ).renderer()?.arrowShapes;
+    const triangle = shapes?.triangle;
+    if (!triangle) return;
+    triangle.gap = (edge: unknown) => {
+      const e = edge as { pstyle(name: string): { pfValue: number; value: number } };
+      return arrowHeadLength(e.pstyle('width').pfValue, e.pstyle('arrow-scale').value);
+    };
+  } catch {
+    /* Internals moved. The arrows overlap slightly again; nothing else breaks. */
+  }
+}
+
 /** Grid pitch, in graph units. Also the snap distance. */
 export const GRID = 40;
 
@@ -518,13 +570,16 @@ function toElements(
     // curve.
     // Each line otherwise runs the full distance between the boxes, straight
     // through the *other* direction's arrowhead — most visibly on a hollow
-    // head, where the opposing line is drawn across the white triangle. The
-    // length an arrowhead reserves along its line is (width x arrow-scale x
-    // 2), so pulling each line's tail back by exactly the partner's arrow
-    // length makes both segments start and end at the same two points: they
-    // still overlap perfectly and read as one line, but neither now crosses
-    // the other's head.
-    const arrowSpan = (strength: number) => width * arrowFor(strength) * 2;
+    // head, where the opposing line is drawn across the white triangle. Pulling
+    // each line's tail back by exactly the partner's arrow length makes both
+    // segments start and end at the same two points: they still overlap
+    // perfectly and read as one line, but neither now crosses the other's head.
+    //
+    // This used to use (width x arrow-scale x 2), which is Cytoscape's
+    // `standardGap` and not the length of anything it draws — so the inset was
+    // as much as three times too small and each line was still ruled across the
+    // other's head. `arrowHeadLength` is the real geometry.
+    const arrowSpan = (strength: number) => arrowHeadLength(width, arrowFor(strength));
 
     els.push({
       group: 'edges',

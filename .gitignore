@@ -7,6 +7,10 @@ dist/
 !.env.example
 coverage/
 
+# TypeScript's incremental-build scratch file. Regenerated on every check, and
+# it changed in almost every commit for no reader's benefit.
+tsconfig.tsbuildinfo
+
 # Generated translation artefacts: the review documents and the flattened
 # locale dump they are built from. Regenerate with `npm run i18n:review`.
 build/

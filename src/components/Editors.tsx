@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import {
-  CATEGORY_META,
   LINK_VALENCES,
   STRENGTHS,
-  STRENGTH_LABEL,
-  VALENCE_LABEL,
   categoriesByGroup,
+  categoryHint,
+  categoryLabel,
+  strengthLabel,
+  valenceLabelOf,
   type EemmCategory,
   type LinkValence,
   type Strength,
 } from '../model/eemm';
 import type { PbtEdge, PbtNode } from '../model/types';
+import { fmt } from '../i18n/strings';
+import { useStrings } from '../i18n';
 
 interface NodeEditorProps {
   initial?: Partial<PbtNode>;
@@ -35,6 +38,7 @@ interface NodeEditorProps {
  * disclosure instead of setting the pace of the whole session.
  */
 export function NodeEditor({ initial, title, onCancel, onSave }: NodeEditorProps) {
+  const t = useStrings();
   const [label, setLabel] = useState(initial?.label ?? '');
   const [category, setCategory] = useState<EemmCategory>(initial?.category ?? 'uncategorised');
   const [severity, setSeverity] = useState<number | undefined>(initial?.severity);
@@ -54,27 +58,27 @@ export function NodeEditor({ initial, title, onCancel, onSave }: NodeEditorProps
       footer={
         <>
           <button className="btn" onClick={onCancel}>
-            Cancel
+            {t.action.cancel}
           </button>
           <button className="btn btn-primary" onClick={submit} disabled={!label.trim()}>
-            Add
+            {t.action.add}
           </button>
         </>
       }
     >
       <label className="field">
-        <span>Name</span>
+        <span>{t.nodeEditor.name}</span>
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          placeholder="In the person's own words"
+          placeholder={t.nodeEditor.namePlaceholder}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           maxLength={120}
         />
       </label>
 
       <fieldset className="field">
-        <legend>Category</legend>
+        <legend>{t.nodeEditor.category}</legend>
         <div className="cat-grid">
           {categoriesByGroup().map((group) => (
             <div key={group.group} className="cat-group">
@@ -89,30 +93,27 @@ export function NodeEditor({ initial, title, onCancel, onSave }: NodeEditorProps
                     onClick={() => setCategory(c.id)}
                     aria-pressed={category === c.id}
                   >
-                    {c.label}
+                    {categoryLabel(c.id)}
                   </button>
                 ))}
               </div>
             </div>
           ))}
         </div>
-        <small>{CATEGORY_META[category].hint}</small>
+        <small>{categoryHint(category)}</small>
       </fieldset>
 
       <button type="button" className="disclosure" onClick={() => setAdvanced(!advanced)}>
-        {advanced ? '▾' : '▸'} Ratings and notes (optional)
+        {advanced ? '▾' : '▸'} {t.nodeEditor.ratingsDisclosure}
       </button>
 
       {advanced && (
         <div className="advanced">
-          <small className="muted">
-            Used in research protocols to compare networks across people and across time. Not needed for
-            everyday clinical mapping.
-          </small>
-          <Rating label="How distressing (0–10)" value={severity} onChange={setSeverity} />
-          <Rating label="How often (0–10)" value={frequency} onChange={setFrequency} />
+          <small className="muted">{t.nodeEditor.ratingsNote}</small>
+          <Rating label={t.nodeEditor.severity} value={severity} onChange={setSeverity} />
+          <Rating label={t.nodeEditor.frequency} value={frequency} onChange={setFrequency} />
           <label className="field">
-            <span>Notes</span>
+            <span>{t.nodeEditor.notes}</span>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} maxLength={2000} />
           </label>
         </div>
@@ -130,6 +131,7 @@ function Rating({
   value: number | undefined;
   onChange: (v: number | undefined) => void;
 }) {
+  const t = useStrings();
   return (
     <label className="field">
       <span>{label}</span>
@@ -142,11 +144,11 @@ function Rating({
           value={value ?? 0}
           onChange={(e) => onChange(Number(e.target.value))}
           disabled={value === undefined}
-          aria-valuetext={value === undefined ? 'Not rated' : String(value)}
+          aria-valuetext={value === undefined ? t.nodeEditor.notRated : String(value)}
         />
         <output>{value === undefined ? '—' : value}</output>
         <button type="button" className="btn btn-small" onClick={() => onChange(value === undefined ? 5 : undefined)}>
-          {value === undefined ? 'Rate' : 'Clear'}
+          {value === undefined ? t.nodeEditor.rate : t.nodeEditor.clearRating}
         </button>
       </div>
     </label>
@@ -173,6 +175,7 @@ interface EdgeEditorProps {
  * helping/not-helping row is optional and can be left alone.
  */
 export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwitchTo, onDelete, onCancel, onSave }: EdgeEditorProps) {
+  const t = useStrings();
   const [direction, setDirection] = useState<PbtEdge['direction']>(initial?.direction ?? 'increases');
   const [strength, setStrength] = useState<Strength | null>(initial?.strength ?? null);
   const [valence, setValence] = useState<LinkValence>(initial?.valence ?? 'neutral');
@@ -185,25 +188,25 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
 
   return (
     <Modal
-      title="How does this affect that?"
+      title={t.edgeEditor.title}
       onClose={onCancel}
       footer={
         <>
           {onDelete && (
             <button className="btn btn-danger btn-small" onClick={onDelete}>
-              Remove link
+              {t.edgeEditor.removeLink}
             </button>
           )}
           <span className="spacer" />
           <button className="btn" onClick={onCancel}>
-            Cancel
+            {t.action.cancel}
           </button>
           <button
             className="btn btn-primary"
             disabled={strength === null}
             onClick={() => strength !== null && onSave({ direction, strength, valence })}
           >
-            {initial ? 'Update' : 'Add link'}
+            {initial ? t.action.update : t.edgeEditor.addLink}
           </button>
         </>
       }
@@ -211,15 +214,24 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
       {/* Reading the relationship back as a sentence is what stops people
           drawing the arrow the wrong way round, which is the most common error
           in network mapping. */}
-      <p className="sentence">
-        <strong>{sourceLabel}</strong> {direction === 'increases' ? 'increases' : 'decreases'}{' '}
-        <strong>{targetLabel}</strong>
-      </p>
+      {/* Built from a whole-sentence template rather than concatenated pieces:
+          languages put the verb in different places, and gluing subject + verb
+          + object in English order produces nonsense in several of them. */}
+      <p
+        className="sentence"
+        dangerouslySetInnerHTML={{
+          __html: fmt(
+            direction === 'increases' ? t.edgeEditor.sentenceIncreases : t.edgeEditor.sentenceDecreases,
+            { source: `<strong>${escapeHtml(sourceLabel)}</strong>`, target: `<strong>${escapeHtml(targetLabel)}</strong>` },
+          ),
+        }}
+      />
 
       {(['increases', 'decreases'] as const).map((d) => (
         <div key={d} className="strength-block">
           <span className="strength-label">
-            <ArrowGlyph filled={d === 'increases'} /> {d === 'increases' ? 'Increases it' : 'Decreases it'}
+            <ArrowGlyph filled={d === 'increases'} />{' '}
+            {d === 'increases' ? t.edgeEditor.increasesIt : t.edgeEditor.decreasesIt}
           </span>
           <div className="strength-row">
             {STRENGTHS.map((s) => (
@@ -231,7 +243,7 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
                 aria-pressed={direction === d && strength === s}
               >
                 <span className={`bar bar-${s}`} aria-hidden="true" />
-                {STRENGTH_LABEL[s]}
+                {strengthLabel(s)}
               </button>
             ))}
           </div>
@@ -240,7 +252,7 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
 
       {alternate && onSwitchTo && (
         <p className="alt-direction">
-          These two also influence each other the other way.{' '}
+          {t.edgeEditor.altDirection}{' '}
           <button
             type="button"
             className="linkish"
@@ -257,7 +269,7 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
               onSwitchTo(alternate.id);
             }}
           >
-            Edit {alternate.sourceLabel} → {alternate.targetLabel}
+            {fmt(t.edgeEditor.editAlt, { source: alternate.sourceLabel, target: alternate.targetLabel })}
           </button>
         </p>
       )}
@@ -268,7 +280,8 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
         need it and it should not slow down drawing.
       */}
       <button type="button" className="disclosure" onClick={() => setShowValence(!showValence)}>
-        {showValence ? '▾' : '▸'} Is this link helping? {valence !== 'neutral' && `(${VALENCE_LABEL[valence]})`}
+        {showValence ? '▾' : '▸'} {t.edgeEditor.helpingDisclosure}{' '}
+        {valence !== 'neutral' && `(${valenceLabelOf(valence)})`}
       </button>
 
       {showValence && (
@@ -277,19 +290,22 @@ export function EdgeEditor({ sourceLabel, targetLabel, initial, alternate, onSwi
             {LINK_VALENCES.map((v) => (
               <label key={v} className="radio">
                 <input type="radio" name="valence" checked={valence === v} onChange={() => setValence(v)} />
-                <span>{VALENCE_LABEL[v]}</span>
+                <span>{valenceLabelOf(v)}</span>
               </label>
             ))}
           </div>
-          <small>
-            No process is helpful or harmful on its own; it depends what it connects to, which is why this is
-            asked here and not when you name the box. Marking links is what lets the Analysis panel say which
-            change would help rather than only which change would spread furthest. Leave it alone if you are
-            not using that.
-          </small>
+          <small>{t.edgeEditor.helpingNote}</small>
         </fieldset>
       )}
     </Modal>
+  );
+}
+
+/** Node labels are user text and go into the sentence template as markup. */
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[<>&"']/g,
+    (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[c]!,
   );
 }
 

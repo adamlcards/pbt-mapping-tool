@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Graph, type GraphApi } from './components/Graph';
+import { Graph, type GraphApi, type EdgeColourMode } from './components/Graph';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Modal } from './components/Modal';
 import { NodeEditor, EdgeEditor } from './components/Editors';
@@ -9,8 +9,10 @@ import { StructurePanel } from './components/StructurePanel';
 import { SnapshotPanel } from './components/SnapshotPanel';
 import { useStore, type Tool } from './state/store';
 import { CATEGORY_META, type EemmCategory } from './model/eemm';
-import { TRIAL_LABEL, TRIAL_STATES, type TrialState } from './model/types';
-import { t } from './i18n/strings';
+import { TRIAL_STATES, trialHint, trialLabel, type TrialState } from './model/types';
+import { fmt, plural } from './i18n/strings';
+import { useStrings, useLocale, LOCALES, type LocaleCode } from './i18n';
+import { LanguageDialog } from './components/LanguageDialog';
 import { parseNetwork } from './model/schema';
 import * as idb from './persistence/idb';
 import { buildShareLink, readShareFromUrl, type ShareLink } from './persistence/share';
@@ -40,18 +42,23 @@ type Dialog =
   | { kind: 'about' }
   | { kind: 'clear' }
   | { kind: 'trial'; elementKind: 'node' | 'edge'; id: string }
-  | { kind: 'kernel' };
+  | { kind: 'kernel' }
+  | { kind: 'language' };
 
 type SidePanel = 'none' | 'analysis' | 'structure' | 'snapshots';
 
 const studyCtx = readStudyContext();
 
-/** Shown in every tooltip so the shortcuts get learned by use, not by reading Help. */
+/**
+ * Shown in every tooltip so the shortcuts get learned by use, not by reading
+ * Help. The letters are the physical keys and are the same in every language;
+ * Delete's longer explanation is translated at the point of use.
+ */
 const TOOL_KEY: Record<Tool, string> = {
   select: 'S',
   add: 'A',
   connect: 'C',
-  delete: 'D, or Delete/Backspace to remove what is selected',
+  delete: 'D',
 };
 
 type Theme = 'light' | 'dark';
@@ -76,7 +83,9 @@ function initialTheme(): Theme {
 }
 
 export default function App() {
-  const s = t();
+  const s = useStrings();
+  const locale = useLocale((st) => st.code);
+  const setLocale = useLocale((st) => st.setLocale);
   const store = useStore();
   const {
     network,
@@ -105,6 +114,26 @@ export default function App() {
   // Context is the default because that is where a formulation usually starts:
   // the situation or event, then what it sets off.
   const [nextCategory, setNextCategory] = useState<EemmCategory>('context');
+  /**
+   * What arrow colour means, and whether ratings are printed on the boxes.
+   * Both are display preferences, not data, so they live in localStorage rather
+   * than in the network: two people opening the same shared map should each see
+   * it the way they set their own tool up.
+   */
+  const [edgeColour, setEdgeColour] = useState<EdgeColourMode>(() => {
+    try {
+      return localStorage.getItem('pbt-edge-colour') === 'direction' ? 'direction' : 'valence';
+    } catch {
+      return 'valence';
+    }
+  });
+  const [showMetrics, setShowMetrics] = useState(() => {
+    try {
+      return localStorage.getItem('pbt-metrics') === 'on';
+    } catch {
+      return false;
+    }
+  });
   /*
    * The category a plain "Add node" should start from. Defaults to Affect, the
    * first dimension in the EEMM ordering, then follows whatever
@@ -125,6 +154,15 @@ export default function App() {
       /* storage blocked; the setting still applies for this session */
     }
   }, [showGrid]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pbt-edge-colour', edgeColour);
+      localStorage.setItem('pbt-metrics', showMetrics ? 'on' : 'off');
+    } catch {
+      /* storage blocked; the settings still apply for this session */
+    }
+  }, [edgeColour, showMetrics]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -157,7 +195,7 @@ export default function App() {
       const shared = await readShareFromUrl();
       if (shared) {
         store.replaceNetwork(shared, 'Open shared network');
-        notify('Opened a shared network. It has not overwritten your saved work.');
+        notify(s.toast.sharedOpened);
         return;
       }
       setStorage(await idb.probeStorage());
@@ -223,6 +261,31 @@ export default function App() {
       } else if (meta && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
         e.preventDefault();
         store.redo();
+      } else if (meta && e.key.toLowerCase() === 'c') {
+        // Only intercept when boxes are actually selected. Otherwise Ctrl+C has
+        // to keep meaning "copy the text I have highlighted", which is what
+        // someone reading the analysis panel expects it to do.
+        if (useStore.getState().selectedNodes.length === 0) return;
+        e.preventDefault();
+        const n = store.copySelection();
+        notify(plural({ one: s.toast.copied_one, other: s.toast.copied_other }, n));
+      } else if (meta && e.key.toLowerCase() === 'v') {
+        if (!useStore.getState().clipboard) return;
+        e.preventDefault();
+        const pasted = store.pasteClipboard();
+        if (pasted.length > 0) {
+          setTool('select');
+          setHighlight([]);
+          notify(plural({ one: s.toast.pasted_one, other: s.toast.pasted_other }, pasted.length));
+        }
+      } else if (meta && e.key.toLowerCase() === 'd') {
+        // Duplicate in place: copy and paste in one keystroke, which is the
+        // actual gesture most of the time.
+        if (useStore.getState().selectedNodes.length === 0) return;
+        e.preventDefault();
+        if (store.copySelection() === 0) return;
+        const pasted = store.pasteClipboard();
+        notify(plural({ one: s.toast.duplicated_one, other: s.toast.duplicated_other }, pasted.length));
       } else if (!meta) {
         // Letters, because they are memorable in a way that 1-5 is not.
         const key = e.key.toLowerCase();
@@ -261,6 +324,10 @@ export default function App() {
           setShowGrid((v) => !v);
           return;
         }
+        if (key === 'm') {
+          setShowMetrics((v) => !v);
+          return;
+        }
         if (key === 'h') {
           store.setHypothesis(!store.hypothesis);
           return;
@@ -288,7 +355,7 @@ export default function App() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [store, setTool, setPendingSource, lastDimension, pendingSource, highlight.length, tool]);
+  }, [store, setTool, setPendingSource, lastDimension, pendingSource, highlight.length, tool, notify]);
 
   const onCanvasClick = (position: { x: number; y: number }) => {
     // Every formulation starts with a situation. On an empty canvas any click
@@ -310,7 +377,7 @@ export default function App() {
     store.clearSelection();
   };
 
-  const onNodeClick = (id: string) => {
+  const onNodeClick = (id: string, additive = false) => {
     if (tool === 'delete') {
       store.deleteNode(id);
       return;
@@ -322,6 +389,19 @@ export default function App() {
         setDialog({ kind: 'newEdge', source: pendingSource, target: id });
         setPendingSource(null);
       }
+      return;
+    }
+    // Shift builds a set instead of replacing one, which is what makes copy
+    // worth having: a formulation is copied a cluster at a time, not a box at
+    // a time. Clicking an already-selected box with Shift removes it, so a
+    // mis-click costs one click rather than starting the selection over.
+    if (additive) {
+      const current = useStore.getState().selectedNodes;
+      const next = current.includes(id) ? current.filter((x) => x !== id) : [...current, id];
+      store.select(next);
+      // Explore-focus is a single-node idea. With several boxes chosen it would
+      // grey out most of the map for no benefit, so multi-select drops it.
+      setHighlight([]);
       return;
     }
     // Select mode doubles as "explore": show only what this node touches, and
@@ -348,13 +428,13 @@ export default function App() {
     try {
       const parsed = parseNetwork(JSON.parse(await file.text()));
       if (!parsed.ok || !parsed.network) {
-        notify(parsed.error ?? 'Could not read that file.');
+        notify(parsed.error ?? s.toast.importUnreadable);
         return;
       }
       store.replaceNetwork(parsed.network, 'Import');
-      notify(parsed.warnings.length > 0 ? parsed.warnings.join(' ') : 'Imported.');
+      notify(parsed.warnings.length > 0 ? parsed.warnings.join(' ') : s.toast.imported);
     } catch {
-      notify('That file is not valid JSON.');
+      notify(s.toast.importNotJson);
     }
   };
 
@@ -365,21 +445,21 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <strong>{s.appShort}</strong>
+          <strong>{s.app.short}</strong>
           <input
             className="title-input"
             value={network.meta.title}
             onChange={(e) => store.setTitle(e.target.value)}
-            aria-label="Network title"
+            aria-label={s.app.networkTitleLabel}
           />
         </div>
 
         {storage === 'unavailable' ? (
           <div
             className="privacy-badge danger"
-            title="This browser is not letting the page save anything, which usually happens when an HTML file is opened directly from disk, or in a private window. Your work is still private, but it will be lost when you close the tab. Use Export to keep it."
+            title={s.privacy.autosaveUnavailableLong}
           >
-            ⚠ Autosave unavailable — export to keep your work
+            ⚠ {s.privacy.autosaveUnavailable}
           </div>
         ) : (
           <div className="privacy-badge" title={studyCtx.active ? s.privacy.studyModeLong : s.privacy.localOnlyLong}>
@@ -392,36 +472,48 @@ export default function App() {
           what you do with the mouse, right is what you do with the finished map.
           Grouping by purpose rather than by frequency means the position of a
           button can be remembered. */}
-      <div className="toolbar" role="toolbar" aria-label="Tools">
+      <div className="toolbar" role="toolbar" aria-label={s.a11y.toolbar}>
         <div className="tb-col tb-left">
           <div className="tb-row">
-            <button className="btn" onClick={store.undo} disabled={!store.canUndo()} title="Undo (Ctrl/Cmd+Z)">
-              ↶ Undo
+            <button className="btn" onClick={store.undo} disabled={!store.canUndo()} title={s.tooltip.undo}>
+              ↶ {s.action.undo}
             </button>
-            <button className="btn" onClick={store.redo} disabled={!store.canRedo()} title="Redo (Ctrl/Cmd+Y)">
-              ↷ Redo
+            <button className="btn" onClick={store.redo} disabled={!store.canRedo()} title={s.tooltip.redo}>
+              ↷ {s.action.redo}
             </button>
-            <button className="btn" onClick={() => graphApi.current?.fit()} title="Fit everything on screen (F)">
-              Fit view
+            <button className="btn" onClick={() => graphApi.current?.fit()} title={s.tooltip.fit}>
+              {s.action.fit}
             </button>
-            <button
-              className="btn"
-              onClick={() => graphApi.current?.tidy()}
-              title="Snap the boxes into rows and columns that follow the arrows (O)"
-            >
-              Organise
+            <button className="btn" onClick={() => graphApi.current?.tidy()} title={s.tooltip.organise}>
+              {s.action.organise}
             </button>
-            <button className="btn" onClick={() => setDialog({ kind: 'clear' })} title="Remove everything">
-              Clear
+            <button className="btn" onClick={() => setDialog({ kind: 'clear' })} title={s.tooltip.clear}>
+              {s.action.clear}
             </button>
           </div>
           <div className="tb-row">
             <button
               className={`btn${showGrid ? ' active' : ''}`}
               onClick={() => setShowGrid(!showGrid)}
-              title="Show a grid and snap boxes to it (G)"
+              title={s.tooltip.grid}
             >
-              # Grid
+              # {s.action.grid}
+            </button>
+            <button
+              className={`btn${edgeColour === 'direction' ? ' active' : ''}`}
+              onClick={() => setEdgeColour(edgeColour === 'direction' ? 'valence' : 'direction')}
+              aria-pressed={edgeColour === 'direction'}
+              title={edgeColour === 'direction' ? s.tooltip.colourIsDirection : s.tooltip.colourIsValence}
+            >
+              ⇅ {edgeColour === 'direction' ? s.action.colourByDirection : s.action.colourByValence}
+            </button>
+            <button
+              className={`btn${showMetrics ? ' active' : ''}`}
+              onClick={() => setShowMetrics(!showMetrics)}
+              aria-pressed={showMetrics}
+              title={s.tooltip.ratings}
+            >
+              ⊞ {s.action.ratings}
             </button>
           </div>
         </div>
@@ -435,7 +527,7 @@ export default function App() {
                 setHighlight([]);
               }}
               aria-pressed={tool === 'select'}
-              title="Select (S)"
+              title={fmt(s.tooltip.toolWithKey, { tool: s.tool.select, key: TOOL_KEY.select })}
             >
               {s.tool.select}
             </button>
@@ -447,9 +539,9 @@ export default function App() {
                 setHighlight([]);
               }}
               aria-pressed={tool === 'add' && nextCategory === 'context'}
-              title="Add an event or context (E)"
+              title={fmt(s.tooltip.toolWithKey, { tool: s.tooltip.addEvent, key: 'E' })}
             >
-              Event / context
+              {s.tool.event}
             </button>
             <button
               className={`btn tool-btn${tool === 'add' && nextCategory !== 'context' ? ' active' : ''}`}
@@ -459,7 +551,7 @@ export default function App() {
                 setHighlight([]);
               }}
               aria-pressed={tool === 'add' && nextCategory !== 'context'}
-              title="Add a process (A)"
+              title={fmt(s.tooltip.toolWithKey, { tool: s.tooltip.addProcess, key: TOOL_KEY.add })}
             >
               {s.tool.add}
             </button>
@@ -474,7 +566,10 @@ export default function App() {
                   if (tl === 'connect' && selected) setPendingSource(selected);
                 }}
                 aria-pressed={tool === tl}
-                title={`${s.tool[tl]} (${TOOL_KEY[tl]})`}
+                title={fmt(s.tooltip.toolWithKey, {
+                  tool: s.tool[tl],
+                  key: tl === 'delete' ? s.tooltip.deleteKeyHint : TOOL_KEY[tl],
+                })}
               >
                 {s.tool[tl]}
               </button>
@@ -488,28 +583,28 @@ export default function App() {
                 store.setHypothesis(on);
                 if (on) {
                   setPanel('analysis');
-                  notify('Hypothesis on. Anything you add now is a proposal, drawn dashed.');
+                  notify(s.toast.hypothesisOn);
                 }
               }}
               aria-pressed={store.hypothesis}
-              title="Add something you are considering and see what it would change (H)"
+              title={s.tooltip.hypothesis}
             >
-              ⌕ Hypothesis
+              ⌕ {s.action.hypothesis}
             </button>
-            <button className="btn" onClick={() => setDialog({ kind: 'kernel' })} title="Treatment kernels (in development)">
-              ⬡ Kernel
+            <button className="btn" onClick={() => setDialog({ kind: 'kernel' })} title={s.tooltip.kernel}>
+              ⬡ {s.action.kernel}
             </button>
             <button
               className={`btn${panel === 'analysis' ? ' active' : ''}`}
               onClick={() => setPanel(panel === 'analysis' ? 'none' : 'analysis')}
-              title="Centrality, feedback loops, pathways and leverage"
+              title={s.tooltip.analyse}
             >
               {s.action.analyse}
             </button>
             <button
               className={`btn${panel === 'snapshots' ? ' active' : ''}`}
               onClick={() => setPanel(panel === 'snapshots' ? 'none' : 'snapshots')}
-              title="Save this map as a timepoint and compare later"
+              title={s.tooltip.snapshots}
             >
               {s.action.snapshots}
             </button>
@@ -518,65 +613,75 @@ export default function App() {
 
         <div className="tb-col tb-right">
           <div className="tb-row">
-            <button className="btn" onClick={() => fileInput.current?.click()} title="Load a saved file">
-              Import
+            <button className="btn" onClick={() => fileInput.current?.click()} title={s.tooltip.import}>
+              {s.action.import}
             </button>
-            <button className="btn" onClick={() => setDialog({ kind: 'export' })} title="Save as image, PDF, JSON or CSV">
-              Export
+            <button className="btn" onClick={() => setDialog({ kind: 'export' })} title={s.tooltip.export}>
+              {s.action.export}
             </button>
-            <button className="btn" onClick={() => setDialog({ kind: 'share' })} title="Get a link to this map">
-              Share link
+            <button className="btn" onClick={() => setDialog({ kind: 'share' })} title={s.tooltip.share}>
+              {s.action.share}
             </button>
-            <button className="btn" onClick={() => setDialog({ kind: 'help' })} title="How to use this">
-              Help
+            <button className="btn" onClick={() => setDialog({ kind: 'help' })} title={s.tooltip.help}>
+              {s.action.help}
             </button>
             <button className="btn" onClick={() => setDialog({ kind: 'about' })}>
-              About
+              {s.action.about}
             </button>
             <button
               className="btn"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={theme === 'dark' ? s.tooltip.themeToLight : s.tooltip.themeToDark}
             >
-              {theme === 'dark' ? '☀ Light' : '☾ Dark'}
+              {theme === 'dark' ? `☀ ${s.action.themeLight}` : `☾ ${s.action.themeDark}`}
             </button>
           </div>
           <div className="tb-row">
-            <button className="btn" onClick={() => setDialog({ kind: 'templates' })} title="Start from an example">
-              Templates
+            <button className="btn" onClick={() => setDialog({ kind: 'templates' })} title={s.tooltip.templates}>
+              {s.action.templates}
             </button>
-            <button className={`btn${guided ? ' active' : ''}`} onClick={() => setGuided(!guided)} title="Step-by-step build">
+            <button
+              className={`btn${guided ? ' active' : ''}`}
+              onClick={() => setGuided(!guided)}
+              title={s.tooltip.guided}
+            >
               {s.action.guided}
+            </button>
+            {/* The picker sits with the other whole-app settings rather than in
+                a dialog behind Help: someone who cannot read the interface
+                needs to find this without reading anything. */}
+            <button className="btn" onClick={() => setDialog({ kind: 'language' })} title={s.tooltip.language}>
+              🌐 {LOCALES.find((l) => l.code === locale)?.nativeName ?? s.action.language}
             </button>
           </div>
         </div>
       </div>
 
       <p className="tool-hint" role="status">
-        {network.nodes.length === 0 && (
-          <strong>Start with the event or situation this is about. Click anywhere. </strong>
-        )}
+        {network.nodes.length === 0 && <strong>{s.toolHint.start} </strong>}
         {highlight.length > 0 && (
           <>
             <button className="btn btn-small" onClick={() => setHighlight([])}>
-              Show everything again
+              {s.toolHint.showEverything}
             </button>{' '}
-            Focused on part of the network.{' '}
+            {s.toolHint.focused}{' '}
           </>
         )}
         {s.toolHint[tool]}
-        {pendingSource && ` Source: ${nodeLabel(pendingSource)}. Now click the node it influences.`}
+        {pendingSource && ` ${fmt(s.toolHint.pendingSource, { label: nodeLabel(pendingSource) })}`}
 
       </p>
 
       <main className="workspace">
         <ErrorBoundary
-          fallbackTitle="The drawing canvas could not start"
-          fallbackHint="This usually means graphics acceleration is unavailable on this machine. Your network is safe. Open List view to read and edit it as text, and Export to get it out."
+          fallbackTitle={s.error.canvasTitle}
+          fallbackHint={s.error.canvasHint}
         >
           <Graph
             theme={theme}
             showGrid={showGrid}
+            edgeColour={edgeColour}
+            showMetrics={showMetrics}
             selected={{ nodes: store.selectedNodes, edge: store.selectedEdge }}
             onCanvasClick={onCanvasClick}
             onNodeClick={onNodeClick}
@@ -603,9 +708,13 @@ export default function App() {
           <aside className="side-panel" aria-label={panel}>
             <div className="side-head">
               <h2>
-                {panel === 'analysis' ? s.analysis.title : panel === 'snapshots' ? s.action.snapshots : 'List view'}
+                {panel === 'analysis'
+                  ? s.panel.analysis
+                  : panel === 'snapshots'
+                    ? s.panel.snapshots
+                    : s.panel.listView}
               </h2>
-              <button className="icon-btn" onClick={() => setPanel('none')} aria-label="Close panel">
+              <button className="icon-btn" onClick={() => setPanel('none')} aria-label={s.tooltip.closePanel}>
                 ✕
               </button>
             </div>
@@ -642,7 +751,7 @@ export default function App() {
 
       {dialog.kind === 'newNode' && (
         <NodeEditor
-          title={nextCategory === 'context' ? 'New event or context' : 'New node'}
+          title={nextCategory === 'context' ? s.nodeEditor.newEvent : s.nodeEditor.newNode}
           initial={{ category: nextCategory }}
           onCancel={() => setDialog({ kind: 'none' })}
           onSave={(v) => {
@@ -665,7 +774,7 @@ export default function App() {
 
       {editingNode && (
         <NodeEditor
-          title="Edit node"
+          title={s.nodeEditor.edit}
           initial={editingNode}
           onCancel={() => setDialog({ kind: 'none' })}
           onSave={(v) => {
@@ -732,10 +841,7 @@ export default function App() {
 
       {dialog.kind === 'templates' && (
         <Modal title={s.action.templates} onClose={() => setDialog({ kind: 'none' })}>
-          <p className="muted small">
-            Starting points, not formulations. Replace the labels with the person's own words, and delete
-            anything that does not fit. A template that goes unchallenged is worse than a blank canvas.
-          </p>
+          <p className="muted small">{s.templates.intro}</p>
           <ul className="template-list">
             {listTemplates().map((tpl) => (
               <li key={tpl.id}>
@@ -759,20 +865,17 @@ export default function App() {
 
       {dialog.kind === 'export' && (
         <Modal title={s.action.export} onClose={() => setDialog({ kind: 'none' })}>
-          <p className="muted small">
-            The CSV formats load straight into R or Python. The adjacency matrix is what qgraph, igraph and
-            networkx expect as input.
-          </p>
+          <p className="muted small">{s.exportDialog.intro}</p>
           <div className="export-grid">
             {(
               [
-                ['Network (JSON)', () => download(`${safeFilename(network.meta.title)}.json`, exportJson(network), 'application/json')],
-                ['Edge list (CSV)', () => download(`${safeFilename(network.meta.title)}_edges.csv`, exportEdgeListCsv(network), 'text/csv')],
-                ['Node list (CSV)', () => download(`${safeFilename(network.meta.title)}_nodes.csv`, exportNodeListCsv(network), 'text/csv')],
-                ['Adjacency matrix (CSV)', () => download(`${safeFilename(network.meta.title)}_matrix.csv`, exportAdjacencyCsv(network), 'text/csv')],
-                ['Analysis report (Markdown)', () => download(`${safeFilename(network.meta.title)}_report.md`, exportReportMarkdown(network), 'text/markdown')],
-                ['Build log (CSV)', () => download(`${safeFilename(network.meta.title)}_events.csv`, exportEventsCsv(store.events), 'text/csv')],
-                ['Image (PNG)', () => {
+                [s.exportDialog.json, () => download(`${safeFilename(network.meta.title)}.json`, exportJson(network), 'application/json')],
+                [s.exportDialog.edges, () => download(`${safeFilename(network.meta.title)}_edges.csv`, exportEdgeListCsv(network), 'text/csv')],
+                [s.exportDialog.nodes, () => download(`${safeFilename(network.meta.title)}_nodes.csv`, exportNodeListCsv(network), 'text/csv')],
+                [s.exportDialog.matrix, () => download(`${safeFilename(network.meta.title)}_matrix.csv`, exportAdjacencyCsv(network), 'text/csv')],
+                [s.exportDialog.report, () => download(`${safeFilename(network.meta.title)}_report.md`, exportReportMarkdown(network), 'text/markdown')],
+                [s.exportDialog.events, () => download(`${safeFilename(network.meta.title)}_events.csv`, exportEventsCsv(store.events), 'text/csv')],
+                [s.exportDialog.png, () => {
                   const url = graphApi.current?.pngDataUrl({ blackAndWhite: false, scale: 2 });
                   if (url) {
                     const a = document.createElement('a');
@@ -781,11 +884,11 @@ export default function App() {
                     a.click();
                   }
                 }],
-                ['Vector (SVG)', () => {
+                [s.exportDialog.svg, () => {
                   const svg = graphApi.current?.svg();
                   if (svg) download(`${safeFilename(network.meta.title)}.svg`, svg, 'image/svg+xml');
                 }],
-                ['Print / PDF', () => graphApi.current?.print(network.meta.title)],
+                [s.exportDialog.print, () => graphApi.current?.print(network.meta.title)],
               ] as [string, () => void][]
             ).map(([label, fn]) => (
               <button key={label} className="btn" onClick={fn}>
@@ -800,7 +903,7 @@ export default function App() {
 
       {dialog.kind === 'clear' && (
         <Modal
-          title="Clear this network?"
+          title={s.clearDialog.title}
           onClose={() => setDialog({ kind: 'none' })}
           footer={
             <>
@@ -814,15 +917,12 @@ export default function App() {
                   setDialog({ kind: 'none' });
                 }}
               >
-                Clear everything
+                {s.clearDialog.confirm}
               </button>
             </>
           }
         >
-          <p>
-            This removes all {network.nodes.length} nodes and {network.edges.length} connections. You can undo
-            it, and any saved timepoints are kept.
-          </p>
+          <p>{fmt(s.clearDialog.body, { nodes: network.nodes.length, edges: network.edges.length })}</p>
         </Modal>
       )}
 
@@ -856,6 +956,17 @@ export default function App() {
 
       {dialog.kind === 'kernel' && <KernelDialog onClose={() => setDialog({ kind: 'none' })} />}
 
+      {dialog.kind === 'language' && (
+        <LanguageDialog
+          current={locale}
+          onChoose={(code: LocaleCode) => {
+            setLocale(code);
+            setDialog({ kind: 'none' });
+          }}
+          onClose={() => setDialog({ kind: 'none' })}
+        />
+      )}
+
       {dialog.kind === 'help' && (
         <HelpDialog
           onClose={() => setDialog({ kind: 'none' })}
@@ -871,7 +982,8 @@ export default function App() {
 }
 
 function ShareDialog({ onClose }: { onClose: () => void }) {
-  const network = useStore((s) => s.network);
+  const s = useStrings();
+  const network = useStore((st) => st.network);
   const [copied, setCopied] = useState(false);
   // Compressing the payload is asynchronous (CompressionStream), so the link
   // arrives a tick after the dialog opens rather than during render.
@@ -887,19 +999,12 @@ function ShareDialog({ onClose }: { onClose: () => void }) {
   }, [network]);
 
   return (
-    <Modal title="Share link" onClose={onClose} wide>
-      <p className="muted small">
-        The whole network is encoded in the link itself. There is no server copy, and the part carrying your
-        content is never sent in the web request, so nothing is stored or logged anywhere. Anyone with the
-        link can open and edit their own copy.
-      </p>
+    <Modal title={s.share.title} onClose={onClose} wide>
+      <p className="muted small">{s.share.intro}</p>
       {!link ? (
-        <p className="muted small">Building the link…</p>
+        <p className="muted small">{s.share.building}</p>
       ) : link.tooLong ? (
-        <p className="warn-box">
-          This network is too large for a link ({link.length} characters). Export it as JSON and send the file
-          instead.
-        </p>
+        <p className="warn-box">{fmt(s.share.tooLong, { length: link.length })}</p>
       ) : (
         <>
           <textarea readOnly value={link.url} rows={4} className="share-box" onFocus={(e) => e.currentTarget.select()} />
@@ -911,7 +1016,7 @@ function ShareDialog({ onClose }: { onClose: () => void }) {
               setTimeout(() => setCopied(false), 2000);
             }}
           >
-            {copied ? 'Copied' : 'Copy link'}
+            {copied ? s.action.copied : s.action.copy}
           </button>
         </>
       )}
@@ -920,86 +1025,73 @@ function ShareDialog({ onClose }: { onClose: () => void }) {
 }
 
 function HelpDialog({ onClose, onOpenList }: { onClose: () => void; onOpenList: () => void }) {
+  const s = useStrings();
   return (
-    <Modal title="How to use this" onClose={onClose} wide>
-      <h3>Building a map</h3>
+    <Modal title={s.help.title} onClose={onClose} wide>
+      <h3>{s.help.buildingHeading}</h3>
       <ul>
         <li>
-          <strong>Event / context</strong> — the situation this is about. Start here; on an empty canvas any
-          click creates one. It gets a rounded box, because it is not something the person is doing.
+          <strong>{s.tool.event}</strong> — {s.help.buildingEvent}
         </li>
         <li>
-          <strong>Add node</strong> — a process: a thought, feeling, urge, or action. Square box, coloured by
-          its EEMM category.
+          <strong>{s.tool.add}</strong> — {s.help.buildingAdd}
         </li>
         <li>
-          <strong>Connect</strong> — click the influencing box, then the one it influences. Then pick, in one
-          click, whether it increases or decreases it and by how much.
+          <strong>{s.tool.connect}</strong> — {s.help.buildingConnect}
         </li>
         <li>
-          <strong>Delete</strong> — click any box or arrow. Or select something and press Delete.
+          <strong>{s.tool.delete}</strong> — {s.help.buildingDelete}
         </li>
-        <li>Double-click a box to edit it. Drag to move, in any mode.</li>
+        <li>{s.help.buildingDoubleClick}</li>
       </ul>
 
-      <h3>Reading the picture</h3>
+      <h3>{s.help.readingHeading}</h3>
+      <ul>
+        {/* Bold is carried inside the string as **markers** rather than as JSX
+            around a fragment: which words need emphasis differs by language,
+            and splitting the sentence into English-shaped pieces would force
+            every translation into English word order. */}
+        <li dangerouslySetInnerHTML={{ __html: emphasis(s.help.readingArrowheads) }} />
+        <li>{s.help.readingReciprocal}</li>
+        <li>{s.help.readingShapes}</li>
+        <li>{s.help.readingColour}</li>
+        <li>{s.help.readingColourMode}</li>
+      </ul>
+
+      <h3>{s.help.keyboardHeading}</h3>
       <ul>
         <li>
-          A <strong>filled</strong> arrowhead means increases; a <strong>hollow</strong> one means decreases.
-          Thicker lines with bigger heads are stronger influences. No numbers, and no reliance on colour.
+          <kbd>S</kbd> <kbd>E</kbd> <kbd>A</kbd> <kbd>C</kbd> <kbd>D</kbd> — {s.help.keyboardTools}
         </li>
-        <li>A line with a head at both ends means the two influence each other.</li>
-        <li>Square boxes are processes; rounded boxes are events or contexts.</li>
-        <li>
-          Arrows are black unless you have marked a link as helping (green) or not helping (red). Most links
-          stay black: the marking is there for when you are testing whether something new breaks a loop.
-        </li>
+        <li>{s.help.keyboardConnectFromSelection}</li>
+        <li>{s.help.keyboardDelete}</li>
+        <li>{s.help.keyboardEscape}</li>
+        <li>{s.help.keyboardView}</li>
+        <li>{s.help.keyboardEditing}</li>
       </ul>
 
-      <h3>Keyboard</h3>
-      <ul>
-        <li>
-          <kbd>S</kbd> select · <kbd>E</kbd> event/context · <kbd>A</kbd> add node · <kbd>C</kbd> connect ·{' '}
-          <kbd>D</kbd> delete
-        </li>
-        <li>
-          Select a box then press <kbd>C</kbd> and your next click finishes the link.
-        </li>
-        <li>
-          <kbd>Delete</kbd> or <kbd>Backspace</kbd> removes what is selected.
-        </li>
-        <li>
-          <kbd>Esc</kbd> cancels what you are doing. Press it again to return to Select.
-        </li>
-        <li>
-          <kbd>F</kbd> fit view · <kbd>O</kbd> organise · <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Z</kbd> undo
-        </li>
-      </ul>
+      <h3>{s.help.organiseHeading}</h3>
+      <p>{s.help.organiseBody}</p>
 
-      <h3>Organise</h3>
-      <p>
-        Snaps the boxes into rows and columns that follow the arrows, with the main context at the leading
-        edge. It tries the layout both across and down and keeps whichever fits your screen better. Feedback
-        loops are ignored when deciding the order, so they read as loops rather than scrambling the sequence.
-      </p>
-
-      <h3>Without a mouse</h3>
-      <p>
-        List view shows the whole map as text you can move through with Tab and edit from the keyboard. It is
-        also what a screen reader reads, since a canvas is invisible to one.
-      </p>
+      <h3>{s.help.mouselessHeading}</h3>
+      <p>{s.help.mouselessBody}</p>
       <button className="btn" onClick={onOpenList}>
-        Open list view
+        {s.help.openListView}
       </button>
 
-      <h3>A caution about the analysis</h3>
-      <p>
-        Centrality, loops and leverage describe the map that was drawn, not the person. They assume influence
-        is linear and immediate, which it is not. They are a structured way to interrogate your own thinking,
-        and they are worth exactly as much as the ratings they were built from.
-      </p>
+      <h3>{s.help.cautionHeading}</h3>
+      <p>{s.help.cautionBody}</p>
     </Modal>
   );
+}
+
+/** Render the **bold** markers the long-form strings use. Text is escaped first. */
+function emphasis(text: string): string {
+  const escaped = text.replace(
+    /[<>&"']/g,
+    (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' })[c]!,
+  );
+  return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
 
 function TrialDialog({
@@ -1015,18 +1107,19 @@ function TrialDialog({
   onCancel: () => void;
   onSave: (trial: TrialState | undefined) => void;
 }) {
+  const s = useStrings();
   const [choice, setChoice] = useState<TrialState>(current ?? 'proposed');
   return (
     <Modal
-      title="What happened with this?"
+      title={s.trial.dialogTitle}
       onClose={onCancel}
       footer={
         <>
           <button className="btn" onClick={onCancel}>
-            Cancel
+            {s.action.cancel}
           </button>
           <button className="btn btn-primary" onClick={() => onSave(choice)}>
-            Save
+            {s.action.save}
           </button>
         </>
       }
@@ -1034,23 +1127,21 @@ function TrialDialog({
       <p className="sentence">
         <strong>{label}</strong>
       </p>
-      {testedAt && <p className="muted small">Last recorded {new Date(testedAt).toLocaleString()}</p>}
+      {testedAt && (
+        <p className="muted small">
+          {fmt(s.trial.lastRecorded, { when: new Date(testedAt).toLocaleString() })}
+        </p>
+      )}
 
       <fieldset className="field">
-        <legend>Where has this got to?</legend>
+        <legend>{s.trial.legend}</legend>
         <div className="trial-options">
           {TRIAL_STATES.map((state) => (
             <label key={state} className={`trial-option${choice === state ? ' active' : ''}`}>
               <input type="radio" name="trial" checked={choice === state} onChange={() => setChoice(state)} />
               <span>
-                <strong>{TRIAL_LABEL[state]}</strong>
-                <small>
-                  {state === 'proposed'
-                    ? 'Still an idea. Drawn dashed, and left out of the baseline the comparison measures against.'
-                    : state === 'adopted'
-                      ? 'It worked. It becomes part of the map and is drawn like everything else.'
-                      : 'It did not work. Kept but faded, so you can see what has already been tried.'}
-                </small>
+                <strong>{trialLabel(state)}</strong>
+                <small>{trialHint(state)}</small>
               </span>
             </label>
           ))}
@@ -1058,70 +1149,51 @@ function TrialDialog({
       </fieldset>
 
       <button className="btn btn-small" onClick={() => onSave(undefined)}>
-        Not a trial at all — make it an ordinary part of the map
+        {s.trial.notATrial}
       </button>
     </Modal>
   );
 }
 
 function KernelDialog({ onClose }: { onClose: () => void }) {
+  const s = useStrings();
   return (
-    <Modal title="Treatment kernels" onClose={onClose}>
-      <p className="warn-box">In development. Nothing behind this button yet.</p>
+    <Modal title={s.kernel.title} onClose={onClose}>
+      <p className="warn-box">{s.kernel.warning}</p>
+      <p>{s.kernel.p1}</p>
+      <p>{s.kernel.p2}</p>
       <p>
-        The plan is a vocabulary of treatment kernels: the smallest units of therapeutic change, in language
-        consistent enough to attach to the processes on a map. Pick a process, and see which kernels are
-        known to act on it.
-      </p>
-      <p>
-        The hard part is deciding what counts as one kernel and how finely to split them, and that is not
-        settled yet.
-      </p>
-      <p>
-        If you have ideas about how this database should be organised, Kean would like to hear them:{' '}
-        <a href="mailto:xiangtks@gmail.com">xiangtks@gmail.com</a>.
+        {s.kernel.p3} <a href="mailto:xiangtks@gmail.com">xiangtks@gmail.com</a>.
       </p>
     </Modal>
   );
 }
 
 function AboutDialog({ onClose }: { onClose: () => void }) {
+  const s = useStrings();
   return (
-    <Modal title="About" onClose={onClose} wide>
-      <p>
-        A free, open-source tool for mapping process-based networks: the functional relationships between
-        the processes that maintain psychological suffering and wellbeing.
-      </p>
+    <Modal title={s.about.title} onClose={onClose} wide>
+      <p>{s.about.intro}</p>
 
-      <h3>Grounding</h3>
+      <h3>{s.about.groundingHeading}</h3>
+      <p dangerouslySetInnerHTML={{ __html: emphasis(s.about.groundingBody) }} />
       <p>
-        The categories and the way this tool thinks about processes come from the Extended Evolutionary
-        Meta-Model set out in the process-based therapy work of <strong>Steven C. Hayes and Stefan G.
-        Hofmann</strong>: affect, cognition, attention, self, motivation and overt behaviour, situated in
-        biophysiological and sociocultural levels, and always read in context.
-      </p>
-      <p>
-        The idea of doing this in a browser was inspired by Joseph Ciarrochi&apos;s{' '}
+        {s.about.inspiration}{' '}
         <a href="https://plan9.netlify.app" target="_blank" rel="noreferrer">
           plan9.netlify.app
         </a>
         .
       </p>
-      <h3>Who made this</h3>
+
+      <h3>{s.about.madeByHeading}</h3>
       <p>
-        Tan Kean Sian conceived this tool and directed its development; all the code was written with Claude,
-        Anthropic&apos;s AI assistant. Questions, or suggestions for improving it, are welcome at{' '}
-        <a href="mailto:xiangtks@gmail.com">xiangtks@gmail.com</a>.
+        {s.about.madeByBody} <a href="mailto:xiangtks@gmail.com">xiangtks@gmail.com</a>.
       </p>
 
-      <h3>Where your data lives</h3>
-      <p>
-        In your browser, and nowhere else. No account, no server, no analytics. Clearing your browser data
-        deletes your maps, so export anything you want to keep. Share links carry the map inside the link
-        itself rather than uploading it anywhere.
-      </p>
+      <h3>{s.about.dataHeading}</h3>
+      <p>{s.about.dataBody}</p>
 
-      <p className="muted small">MIT licensed. Contributions welcome.</p>
+      <p className="muted small">{s.about.licence}</p>
     </Modal>
   );
 }

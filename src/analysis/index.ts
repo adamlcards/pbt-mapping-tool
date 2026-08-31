@@ -3,6 +3,7 @@ import { buildGraph } from './graph';
 import { centrality, type CentralityRow } from './centrality';
 import { findLoops, type LoopResult } from './loops';
 import { rankLeverage, type LeverageRow } from './leverage';
+import { fmt, plural, t } from '../i18n/strings';
 
 export * from './graph';
 export * from './centrality';
@@ -10,8 +11,31 @@ export * from './loops';
 export * from './paths';
 export * from './leverage';
 
+/**
+ * Centrality computed three ways over the same boxes.
+ *
+ * `all` is the whole map. `helpful` and `unhelpful` are the same calculation
+ * restricted to arrows marked as helping or not helping, and they answer a
+ * question the combined figure cannot: a process can look highly central
+ * overall while every one of its connections is unhelpful, and the reverse —
+ * a quiet-looking process that is the person's only adaptive hub. Merging the
+ * two into one number averages away the distinction that matters clinically.
+ *
+ * Neutral (unjudged) arrows appear in `all` and in neither split, so the two
+ * splits do not sum to the total. That is deliberate: an unjudged link is not
+ * evidence of either kind, and silently filing it under one would invent a
+ * clinical judgement the person never made.
+ */
+export interface ValenceCentrality {
+  helpful: CentralityRow[];
+  unhelpful: CentralityRow[];
+  /** How many arrows carry each mark, so the panel can say when a split is empty. */
+  counts: { helpful: number; unhelpful: number; neutral: number };
+}
+
 export interface AnalysisReport {
   centrality: CentralityRow[];
+  byValence: ValenceCentrality;
   loops: LoopResult;
   leverage: LeverageRow[];
   summary: string[];
@@ -30,6 +54,8 @@ export interface AnalysisReport {
 export function analyse(net: PbtNetwork): AnalysisReport {
   const g = buildGraph(net);
   const cent = centrality(g);
+  const helpfulG = buildGraph(net, (e) => e.valence === 'helpful');
+  const unhelpfulG = buildGraph(net, (e) => e.valence === 'unhelpful');
   const loopResult = findLoops(g);
   const leverage = rankLeverage(net, g);
 
@@ -37,8 +63,19 @@ export function analyse(net: PbtNetwork): AnalysisReport {
   const possible = n * (n - 1);
   const density = possible > 0 ? Math.round((g.edges.length / possible) * 1000) / 1000 : 0;
 
+  const byTotal = (rows: CentralityRow[]) => [...rows].sort((a, b) => b.totalStrength - a.totalStrength);
+
   return {
-    centrality: [...cent].sort((a, b) => b.totalStrength - a.totalStrength),
+    centrality: byTotal(cent),
+    byValence: {
+      helpful: byTotal(centrality(helpfulG)),
+      unhelpful: byTotal(centrality(unhelpfulG)),
+      counts: {
+        helpful: helpfulG.edges.length,
+        unhelpful: unhelpfulG.edges.length,
+        neutral: g.edges.length - helpfulG.edges.length - unhelpfulG.edges.length,
+      },
+    },
     loops: loopResult,
     leverage,
     summary: buildSummary(net, cent, loopResult, leverage),
@@ -48,56 +85,75 @@ export function analyse(net: PbtNetwork): AnalysisReport {
   };
 }
 
+/**
+ * Turn the numbers into sentences, in whatever language is active.
+ *
+ * Every sentence is a whole template with placeholders rather than English
+ * fragments glued together. Concatenation is what makes machine-translated
+ * interfaces read badly: "There are" + count + "reinforcing loops" cannot be
+ * reordered, and several of the languages this ships in need to reorder it.
+ */
 function buildSummary(
   net: PbtNetwork,
   cent: CentralityRow[],
   loops: LoopResult,
   leverage: LeverageRow[],
 ): string[] {
+  const s = t().summary;
   const out: string[] = [];
-  if (net.nodes.length === 0) return ['Add some nodes to see an analysis.'];
-  if (net.edges.length === 0) {
-    return ['Nothing is connected yet. Add connections to see how the parts influence each other.'];
-  }
+  if (net.nodes.length === 0) return [s.noNodes];
+  if (net.edges.length === 0) return [s.noEdges];
 
   const byStrength = [...cent].sort((a, b) => b.totalStrength - a.totalStrength);
   const top = byStrength[0];
   if (top && top.totalStrength > 0) {
     out.push(
-      `**${top.label}** is the most connected part of this network (${top.inDegree} influence${top.inDegree === 1 ? '' : 's'} coming in, ${top.outDegree} going out). Central nodes are often where change spreads furthest, though they can also be the hardest to shift directly.`,
+      plural({ one: s.mostConnected_one, other: s.mostConnected_other }, top.inDegree, {
+        label: top.label,
+        inDegree: top.inDegree,
+        outDegree: top.outDegree,
+      }),
     );
   }
 
   if (loops.reinforcing > 0) {
     const strongest = loops.loops.find((l) => l.kind === 'reinforcing');
+    const tightest = strongest
+      ? fmt(s.tightestLoop, { path: `${strongest.labels.join(' → ')} → ${strongest.labels[0]}` })
+      : '';
     out.push(
-      `There ${loops.reinforcing === 1 ? 'is' : 'are'} **${loops.reinforcing} reinforcing loop${loops.reinforcing === 1 ? '' : 's'}** here. These are self-sustaining cycles: they keep going even after whatever started them has passed.${strongest ? ` The tightest is ${strongest.labels.join(' → ')} → ${strongest.labels[0]}.` : ''}`,
+      plural({ one: s.reinforcing_one, other: s.reinforcing_other }, loops.reinforcing) + tightest,
     );
   } else {
-    out.push(
-      'No reinforcing loops were found. Worth asking whether anything here feeds back on itself, because feedback is often what makes a problem persist.',
-    );
+    out.push(s.noReinforcing);
   }
 
   if (loops.balancing > 0) {
-    out.push(
-      `${loops.balancing} balancing loop${loops.balancing === 1 ? '' : 's'} found. These are self-correcting and often mark where the person already has some natural brake on the problem.`,
-    );
+    out.push(plural({ one: s.balancing_one, other: s.balancing_other }, loops.balancing));
   }
 
   const sources = cent.filter((c) => c.isSource);
   if (sources.length > 0) {
     out.push(
-      `${sources.map((s) => `**${s.label}**`).join(', ')} influence${sources.length === 1 ? 's' : ''} others but nothing in the network influences ${sources.length === 1 ? 'it' : 'them'} back. Entry points like this are sometimes the most tractable place to start.`,
+      plural({ one: s.sources_one, other: s.sources_other }, sources.length, {
+        labels: sources.map((x) => `**${x.label}**`).join(', '),
+      }),
     );
   }
 
   const bestLeverage = leverage[0];
   if (bestLeverage && bestLeverage.benefit > 0) {
-    const line = `Reducing **${bestLeverage.label}** has the widest modelled effect, reaching ${bestLeverage.reach} other node${bestLeverage.reach === 1 ? '' : 's'}.`;
+    const line = plural({ one: s.leverage_one, other: s.leverage_other }, bestLeverage.reach, {
+      label: bestLeverage.label,
+      reach: bestLeverage.reach,
+    });
     const caveat =
       bestLeverage.sideEffects.length > 0
-        ? ` Note that it would also suppress ${bestLeverage.sideEffects.map((s) => s.label).join(', ')}, which ${bestLeverage.sideEffects.length === 1 ? 'is' : 'are'} tied to links you marked as helping.`
+        ? plural(
+            { one: s.leverageCaveat_one, other: s.leverageCaveat_other },
+            bestLeverage.sideEffects.length,
+            { labels: bestLeverage.sideEffects.map((x) => x.label).join(', ') },
+          )
         : '';
     out.push(line + caveat);
   }
@@ -105,19 +161,15 @@ function buildSummary(
   const isolated = cent.filter((c) => c.isIsolated);
   if (isolated.length > 0) {
     out.push(
-      `${isolated.map((s) => s.label).join(', ')} ${isolated.length === 1 ? 'is' : 'are'} not connected to anything yet.`,
+      plural({ one: s.isolated_one, other: s.isolated_other }, isolated.length, {
+        labels: isolated.map((x) => x.label).join(', '),
+      }),
     );
   }
 
-  if (!leverage.every((l) => l.converged)) {
-    out.push(
-      'Some parts of this network amplify without limit when modelled, which usually means strong reinforcing loops with no dampening. Treat the leverage figures as indicative only.',
-    );
-  }
+  if (!leverage.every((l) => l.converged)) out.push(s.diverges);
 
-  out.push(
-    '_These figures describe the map you drew, not the person. They are a structured way to look at your own thinking, not a prediction of what will happen._',
-  );
+  out.push(s.caveat);
 
   return out;
 }

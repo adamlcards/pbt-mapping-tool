@@ -11,7 +11,11 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "standalone": "node build-standalone.mjs ../PBT-Mapping-Tool.html"
+    "standalone": "node build-standalone.mjs ../PBT-Mapping-Tool.html",
+    "i18n:extract": "node scripts/extract-strings.mjs",
+    "i18n:check": "node scripts/check-locales.mjs",
+    "i18n:review": "node scripts/export-review.mjs && python3 scripts/make_review_docs.py",
+    "i18n:merge": "python3 scripts/merge_review_docs.py"
   },
   "dependencies": {
     "cytoscape": "^3.30.2",

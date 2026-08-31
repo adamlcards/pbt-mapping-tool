@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useStore } from '../state/store';
 import { diffSnapshots, exportSnapshotDiffCsv, download, safeFilename } from '../export/exporters';
+import { fmt, plural } from '../i18n/strings';
+import { useStrings } from '../i18n';
 
 /**
  * Timepoints.
@@ -12,6 +14,7 @@ import { diffSnapshots, exportSnapshotDiffCsv, download, safeFilename } from '..
  * that lets the method be evaluated at all.
  */
 export function SnapshotPanel() {
+  const t = useStrings();
   const network = useStore((s) => s.network);
   const snapshots = useStore((s) => s.snapshots);
   const takeSnapshot = useStore((s) => s.takeSnapshot);
@@ -31,16 +34,14 @@ export function SnapshotPanel() {
 
   return (
     <div className="snapshots">
-      <p className="muted small">
-        Save the network as it stands now, then come back and draw it again later. Nothing is overwritten.
-      </p>
+      <p className="muted small">{t.snapshots.intro}</p>
 
       <div className="snap-add">
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          placeholder="Label, e.g. Intake or Session 6"
-          aria-label="Label for this timepoint"
+          placeholder={t.snapshots.labelPlaceholder}
+          aria-label={t.snapshots.labelAria}
         />
         <button
           className="btn btn-primary"
@@ -50,11 +51,11 @@ export function SnapshotPanel() {
           }}
           disabled={network.nodes.length === 0}
         >
-          Save timepoint
+          {t.snapshots.saveButton}
         </button>
       </div>
 
-      {snapshots.length === 0 && <p className="muted small">No timepoints saved yet.</p>}
+      {snapshots.length === 0 && <p className="muted small">{t.snapshots.none}</p>}
 
       <ul className="struct-list">
         {snapshots.map((s) => (
@@ -62,14 +63,17 @@ export function SnapshotPanel() {
             <span className="struct-item static">
               <span className="struct-label">{s.label}</span>
               <span className="muted small">
-                {new Date(s.takenAt).toLocaleString()} · {s.network.nodes.length} nodes ·{' '}
-                {s.network.edges.length} connections
+                {fmt(t.snapshots.meta, {
+                  when: new Date(s.takenAt).toLocaleString(),
+                  nodes: s.network.nodes.length,
+                  edges: s.network.edges.length,
+                })}
               </span>
             </span>
             <button className="btn btn-small" onClick={() => restoreSnapshot(s.id)}>
-              Restore
+              {t.action.restore}
             </button>
-            <button className="icon-btn" onClick={() => deleteSnapshot(s.id)} aria-label={`Delete timepoint ${s.label}`}>
+            <button className="icon-btn" onClick={() => deleteSnapshot(s.id)} aria-label={fmt(t.snapshots.deleteAria, { label: s.label })}>
               ✕
             </button>
           </li>
@@ -78,12 +82,12 @@ export function SnapshotPanel() {
 
       {snapshots.length >= 2 && (
         <>
-          <h3>Compare</h3>
+          <h3>{t.snapshots.compare}</h3>
           <div className="path-pickers">
             <label className="field">
-              <span>Earlier</span>
+              <span>{t.snapshots.earlier}</span>
               <select value={a} onChange={(e) => setA(e.target.value)}>
-                <option value="">Choose…</option>
+                <option value="">{t.analysis.choose}</option>
                 {snapshots.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -92,9 +96,9 @@ export function SnapshotPanel() {
               </select>
             </label>
             <label className="field">
-              <span>Later</span>
+              <span>{t.snapshots.later}</span>
               <select value={b} onChange={(e) => setB(e.target.value)}>
-                <option value="">Choose…</option>
+                <option value="">{t.analysis.choose}</option>
                 {snapshots.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -107,7 +111,10 @@ export function SnapshotPanel() {
           {diff && (
             <>
               <p className="stat-line">
-                {diff.rows.length} change{diff.rows.length === 1 ? '' : 's'}
+                {plural(
+                  { one: t.snapshots.changes_one, other: t.snapshots.changes_other },
+                  diff.rows.length,
+                )}
               </p>
               <ul className="diff-list">
                 {diff.rows.slice(0, 60).map((row, i) => (
@@ -132,7 +139,7 @@ export function SnapshotPanel() {
                   )
                 }
               >
-                Download comparison (CSV)
+                {t.snapshots.downloadComparison}
               </button>
             </>
           )}

@@ -1,3 +1,4 @@
+import { t } from '../i18n/strings';
 import type { EemmCategory, LinkValence, Strength } from './eemm';
 
 /**
@@ -28,11 +29,24 @@ export const SCHEMA_VERSION = 3;
 export const TRIAL_STATES = ['proposed', 'adopted', 'ruledOut'] as const;
 export type TrialState = (typeof TRIAL_STATES)[number];
 
+/** English names, for exports and tests. Users see `trialLabel()`. */
 export const TRIAL_LABEL: Record<TrialState, string> = {
   proposed: 'Being considered',
   adopted: 'Tried, and it helped',
   ruledOut: 'Tried, it did not help',
 };
+
+export function trialLabel(state: TrialState): string {
+  return t().trial[state];
+}
+
+export function trialHint(state: TrialState): string {
+  return state === 'proposed'
+    ? t().trial.proposedHint
+    : state === 'adopted'
+      ? t().trial.adoptedHint
+      : t().trial.ruledOutHint;
+}
 
 export type NodeId = string;
 export type EdgeId = string;

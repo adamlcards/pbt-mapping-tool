@@ -1,0 +1,3491 @@
+{
+  "generatedAt": "2026-08-31",
+  "sourceLanguage": "en",
+  "count": 415,
+  "words": 3177,
+  "sections": {
+    "meta": "Language metadata — not shown to users. Do not translate the code or dir.",
+    "app": "Application name, shown in the top-left, and the network title field.",
+    "tool": "The four drawing modes, on the centre of the toolbar. Very short.",
+    "toolHint": "The single line under the toolbar that says what the current mode does.",
+    "action": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+    "tooltip": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+    "privacy": "The badge in the top-right saying where the data is stored, and its tooltip.",
+    "panel": "Headings for the side panels (Analysis, Timepoints, List view).",
+    "nodeEditor": "The dialog for creating and editing a box on the map.",
+    "edgeEditor": "The dialog for creating and editing an arrow between two boxes.",
+    "category": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+    "categoryGroup": "Headings above the category buttons in the node editor.",
+    "strength": "How strong an influence is. Three levels only.",
+    "valence": "Whether a link helps the person. CLINICAL TERMINOLOGY.",
+    "trial": "Recording what happened when an intervention was tried.",
+    "analysis": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+    "summary": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+    "guided": "The step-by-step guided build panel. Long-form teaching text.",
+    "snapshots": "The Timepoints panel: saving the map at a point in time and comparing two.",
+    "structure": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+    "templates": "Names and descriptions of the starting-point maps in the Templates dialog.",
+    "templateNodes": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+    "templateNote": "Appended to a template description when it is loaded.",
+    "exportDialog": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+    "share": "The Share link dialog.",
+    "clearDialog": "The confirmation dialog for clearing the whole map.",
+    "kernel": "The Treatment kernels dialog (a feature still in development).",
+    "help": "The Help dialog. The most-read text in the tool.",
+    "about": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+    "error": "Shown only when the drawing canvas fails to start.",
+    "toast": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+    "language": "The language picker itself.",
+    "a11y": "Screen-reader labels. Never visible on screen, but read aloud."
+  },
+  "entries": [
+    {
+      "key": "meta.code",
+      "group": "meta",
+      "english": "en",
+      "section": "Language metadata — not shown to users. Do not translate the code or dir.",
+      "placeholders": [],
+      "fixed": true
+    },
+    {
+      "key": "meta.name",
+      "group": "meta",
+      "english": "English",
+      "section": "Language metadata — not shown to users. Do not translate the code or dir.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "meta.nativeName",
+      "group": "meta",
+      "english": "English",
+      "section": "Language metadata — not shown to users. Do not translate the code or dir.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "meta.dir",
+      "group": "meta",
+      "english": "ltr",
+      "section": "Language metadata — not shown to users. Do not translate the code or dir.",
+      "placeholders": [],
+      "fixed": true
+    },
+    {
+      "key": "app.name",
+      "group": "app",
+      "english": "Process-Based Network Mapping Tool",
+      "section": "Application name, shown in the top-left, and the network title field.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "app.short",
+      "group": "app",
+      "english": "PBT Mapping Tool",
+      "section": "Application name, shown in the top-left, and the network title field.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "app.networkTitleLabel",
+      "group": "app",
+      "english": "Network title",
+      "section": "Application name, shown in the top-left, and the network title field.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "app.untitledNetwork",
+      "group": "app",
+      "english": "Untitled network",
+      "section": "Application name, shown in the top-left, and the network title field.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tool.select",
+      "group": "tool",
+      "english": "Select",
+      "section": "The four drawing modes, on the centre of the toolbar. Very short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tool.add",
+      "group": "tool",
+      "english": "Add node",
+      "section": "The four drawing modes, on the centre of the toolbar. Very short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tool.connect",
+      "group": "tool",
+      "english": "Connect",
+      "section": "The four drawing modes, on the centre of the toolbar. Very short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tool.delete",
+      "group": "tool",
+      "english": "Delete",
+      "section": "The four drawing modes, on the centre of the toolbar. Very short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tool.event",
+      "group": "tool",
+      "english": "Event / context",
+      "section": "The four drawing modes, on the centre of the toolbar. Very short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.select",
+      "group": "toolHint",
+      "english": "Click to select and see what it connects to. Drag to move.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.add",
+      "group": "toolHint",
+      "english": "Click anywhere on the canvas to add a node.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.connect",
+      "group": "toolHint",
+      "english": "Click the influencing node, then the one it influences.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.delete",
+      "group": "toolHint",
+      "english": "Click a node or connection to remove it.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.start",
+      "group": "toolHint",
+      "english": "Start with the event or situation this is about. Click anywhere.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.focused",
+      "group": "toolHint",
+      "english": "Focused on part of the network.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.showEverything",
+      "group": "toolHint",
+      "english": "Show everything again",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toolHint.pendingSource",
+      "group": "toolHint",
+      "english": "Source: {label}. Now click the node it influences.",
+      "section": "The single line under the toolbar that says what the current mode does.",
+      "placeholders": [
+        "label"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "action.undo",
+      "group": "action",
+      "english": "Undo",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.redo",
+      "group": "action",
+      "english": "Redo",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.fit",
+      "group": "action",
+      "english": "Fit view",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.organise",
+      "group": "action",
+      "english": "Organise",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.clear",
+      "group": "action",
+      "english": "Clear",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.grid",
+      "group": "action",
+      "english": "Grid",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.ratings",
+      "group": "action",
+      "english": "Ratings",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.colourByValence",
+      "group": "action",
+      "english": "Helping",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.colourByDirection",
+      "group": "action",
+      "english": "Up/down",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.hypothesis",
+      "group": "action",
+      "english": "Hypothesis",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.kernel",
+      "group": "action",
+      "english": "Kernel",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.analyse",
+      "group": "action",
+      "english": "Analysis",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.snapshots",
+      "group": "action",
+      "english": "Timepoints",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.import",
+      "group": "action",
+      "english": "Import",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.export",
+      "group": "action",
+      "english": "Export",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.share",
+      "group": "action",
+      "english": "Share link",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.help",
+      "group": "action",
+      "english": "Help",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.about",
+      "group": "action",
+      "english": "About",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.themeLight",
+      "group": "action",
+      "english": "Light",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.themeDark",
+      "group": "action",
+      "english": "Dark",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.templates",
+      "group": "action",
+      "english": "Templates",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.guided",
+      "group": "action",
+      "english": "Guided build",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.cancel",
+      "group": "action",
+      "english": "Cancel",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.save",
+      "group": "action",
+      "english": "Save",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.add",
+      "group": "action",
+      "english": "Add",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.update",
+      "group": "action",
+      "english": "Update",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.close",
+      "group": "action",
+      "english": "Close",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.back",
+      "group": "action",
+      "english": "Back",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.next",
+      "group": "action",
+      "english": "Next",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.finish",
+      "group": "action",
+      "english": "Finish",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.restore",
+      "group": "action",
+      "english": "Restore",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.tryAgain",
+      "group": "action",
+      "english": "Try again",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.copy",
+      "group": "action",
+      "english": "Copy link",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.copied",
+      "group": "action",
+      "english": "Copied",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "action.language",
+      "group": "action",
+      "english": "Language",
+      "section": "Button labels throughout the app. Keep short — these sit in a crowded toolbar.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.undo",
+      "group": "tooltip",
+      "english": "Undo (Ctrl/Cmd+Z)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.redo",
+      "group": "tooltip",
+      "english": "Redo (Ctrl/Cmd+Y)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.fit",
+      "group": "tooltip",
+      "english": "Fit everything on screen (F)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.organise",
+      "group": "tooltip",
+      "english": "Snap the boxes into rows and columns that follow the arrows (O)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.clear",
+      "group": "tooltip",
+      "english": "Remove everything",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.grid",
+      "group": "tooltip",
+      "english": "Show a grid and snap boxes to it (G)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.ratings",
+      "group": "tooltip",
+      "english": "Print severity (S) and frequency (F) ratings on each box (M)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.colourIsDirection",
+      "group": "tooltip",
+      "english": "Arrow colour currently shows increases (blue) and decreases (orange). Click to colour by whether the link helps instead.",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.colourIsValence",
+      "group": "tooltip",
+      "english": "Arrow colour currently shows whether a link helps. Click to colour by increases and decreases instead.",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.addEvent",
+      "group": "tooltip",
+      "english": "Add an event or context",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.addProcess",
+      "group": "tooltip",
+      "english": "Add a process",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.hypothesis",
+      "group": "tooltip",
+      "english": "Add something you are considering and see what it would change (H)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.kernel",
+      "group": "tooltip",
+      "english": "Treatment kernels (in development)",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.analyse",
+      "group": "tooltip",
+      "english": "Centrality, feedback loops, pathways and leverage",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.snapshots",
+      "group": "tooltip",
+      "english": "Save this map as a timepoint and compare later",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.import",
+      "group": "tooltip",
+      "english": "Load a saved file",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.export",
+      "group": "tooltip",
+      "english": "Save as image, PDF, JSON or CSV",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.share",
+      "group": "tooltip",
+      "english": "Get a link to this map",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.help",
+      "group": "tooltip",
+      "english": "How to use this",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.templates",
+      "group": "tooltip",
+      "english": "Start from an example",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.guided",
+      "group": "tooltip",
+      "english": "Step-by-step build",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.themeToLight",
+      "group": "tooltip",
+      "english": "Switch to light theme",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.themeToDark",
+      "group": "tooltip",
+      "english": "Switch to dark theme",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.language",
+      "group": "tooltip",
+      "english": "Change the language of the interface",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.toolWithKey",
+      "group": "tooltip",
+      "english": "{tool} ({key})",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [
+        "tool",
+        "key"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.deleteKeyHint",
+      "group": "tooltip",
+      "english": "D, or Delete/Backspace to remove what is selected",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.closePanel",
+      "group": "tooltip",
+      "english": "Close panel",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.closeDialog",
+      "group": "tooltip",
+      "english": "Close dialog",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "tooltip.closeGuide",
+      "group": "tooltip",
+      "english": "Close guide",
+      "section": "Hover tooltips. Longer than the button they describe; this is where users learn the shortcuts.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.localOnly",
+      "group": "privacy",
+      "english": "Everything stays on this device",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.localOnlyLong",
+      "group": "privacy",
+      "english": "Your map is saved in this browser and is never sent anywhere. Closing the tab is safe. Clearing your browser data will remove it, so export anything you want to keep.",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.studyMode",
+      "group": "privacy",
+      "english": "Study mode",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.studyModeLong",
+      "group": "privacy",
+      "english": "You are taking part in a research study. Your map and the order you built it in are saved to the study server.",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.autosaveUnavailable",
+      "group": "privacy",
+      "english": "Autosave unavailable — export to keep your work",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "privacy.autosaveUnavailableLong",
+      "group": "privacy",
+      "english": "This browser is not letting the page save anything, which usually happens when an HTML file is opened directly from disk, or in a private window. Your work is still private, but it will be lost when you close the tab. Use Export to keep it.",
+      "section": "The badge in the top-right saying where the data is stored, and its tooltip.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "panel.analysis",
+      "group": "panel",
+      "english": "Analysis",
+      "section": "Headings for the side panels (Analysis, Timepoints, List view).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "panel.snapshots",
+      "group": "panel",
+      "english": "Timepoints",
+      "section": "Headings for the side panels (Analysis, Timepoints, List view).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "panel.listView",
+      "group": "panel",
+      "english": "List view",
+      "section": "Headings for the side panels (Analysis, Timepoints, List view).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.newEvent",
+      "group": "nodeEditor",
+      "english": "New event or context",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.newNode",
+      "group": "nodeEditor",
+      "english": "New node",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.edit",
+      "group": "nodeEditor",
+      "english": "Edit node",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.name",
+      "group": "nodeEditor",
+      "english": "Name",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.namePlaceholder",
+      "group": "nodeEditor",
+      "english": "In the person's own words",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.category",
+      "group": "nodeEditor",
+      "english": "Category",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.ratingsDisclosure",
+      "group": "nodeEditor",
+      "english": "Ratings and notes (optional)",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.ratingsNote",
+      "group": "nodeEditor",
+      "english": "Used in research protocols to compare networks across people and across time. Not needed for everyday clinical mapping.",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.severity",
+      "group": "nodeEditor",
+      "english": "How distressing (0–10)",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.frequency",
+      "group": "nodeEditor",
+      "english": "How often (0–10)",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.notes",
+      "group": "nodeEditor",
+      "english": "Notes",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.notRated",
+      "group": "nodeEditor",
+      "english": "Not rated",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.severityShort",
+      "group": "nodeEditor",
+      "english": "S",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.frequencyShort",
+      "group": "nodeEditor",
+      "english": "F",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.rate",
+      "group": "nodeEditor",
+      "english": "Rate",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "nodeEditor.clearRating",
+      "group": "nodeEditor",
+      "english": "Clear",
+      "section": "The dialog for creating and editing a box on the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.title",
+      "group": "edgeEditor",
+      "english": "How does this affect that?",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.sentenceIncreases",
+      "group": "edgeEditor",
+      "english": "{source} increases {target}",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [
+        "source",
+        "target"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.sentenceDecreases",
+      "group": "edgeEditor",
+      "english": "{source} decreases {target}",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [
+        "source",
+        "target"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.increasesIt",
+      "group": "edgeEditor",
+      "english": "Increases it",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.decreasesIt",
+      "group": "edgeEditor",
+      "english": "Decreases it",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.altDirection",
+      "group": "edgeEditor",
+      "english": "These two also influence each other the other way.",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.editAlt",
+      "group": "edgeEditor",
+      "english": "Edit {source} → {target}",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [
+        "source",
+        "target"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.removeLink",
+      "group": "edgeEditor",
+      "english": "Remove link",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.addLink",
+      "group": "edgeEditor",
+      "english": "Add link",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.helpingDisclosure",
+      "group": "edgeEditor",
+      "english": "Is this link helping?",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "edgeEditor.helpingNote",
+      "group": "edgeEditor",
+      "english": "No process is helpful or harmful on its own; it depends what it connects to, which is why this is asked here and not when you name the box. Marking links is what lets the Analysis panel say which change would help rather than only which change would spread furthest. Leave it alone if you are not using that.",
+      "section": "The dialog for creating and editing an arrow between two boxes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.uncategorised.label",
+      "group": "category",
+      "english": "Uncategorised",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.uncategorised.prefix",
+      "group": "category",
+      "english": "",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.uncategorised.hint",
+      "group": "category",
+      "english": "Not yet classified. Fine to leave while you are still thinking.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.affect.label",
+      "group": "category",
+      "english": "Affect",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.affect.prefix",
+      "group": "category",
+      "english": "Affect",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.affect.hint",
+      "group": "category",
+      "english": "Emotions and feelings. Avoiding them, or being willing to have them.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.cognition.label",
+      "group": "category",
+      "english": "Cognition",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.cognition.prefix",
+      "group": "category",
+      "english": "Cognition",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.cognition.hint",
+      "group": "category",
+      "english": "Thoughts, beliefs, rules, rumination, defusion.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.attention.label",
+      "group": "category",
+      "english": "Attention",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.attention.prefix",
+      "group": "category",
+      "english": "Attention",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.attention.hint",
+      "group": "category",
+      "english": "What is being noticed, and what is not. Flexible or narrow focus.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.self.label",
+      "group": "category",
+      "english": "Self",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.self.prefix",
+      "group": "category",
+      "english": "Self",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.self.hint",
+      "group": "category",
+      "english": "Self-concept, identity, self-criticism, self-as-context.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.motivation.label",
+      "group": "category",
+      "english": "Motivation",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.motivation.prefix",
+      "group": "category",
+      "english": "Motivation",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.motivation.hint",
+      "group": "category",
+      "english": "Values, goals, what the person is moving toward or away from.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.overtBehaviour.label",
+      "group": "category",
+      "english": "Overt behaviour",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.overtBehaviour.prefix",
+      "group": "category",
+      "english": "Overt behaviour",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.overtBehaviour.hint",
+      "group": "category",
+      "english": "Observable action. What the person actually does.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.biophysiological.label",
+      "group": "category",
+      "english": "Biophysiological",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.biophysiological.prefix",
+      "group": "category",
+      "english": "Biophysiological",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.biophysiological.hint",
+      "group": "category",
+      "english": "Sleep, pain, illness, medication, arousal, physiology.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.sociocultural.label",
+      "group": "category",
+      "english": "Sociocultural",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.sociocultural.prefix",
+      "group": "category",
+      "english": "Sociocultural",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.sociocultural.hint",
+      "group": "category",
+      "english": "Relationships, family, culture, social support or pressure.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.context.label",
+      "group": "category",
+      "english": "Context / event",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.context.prefix",
+      "group": "category",
+      "english": "Event",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "category.context.hint",
+      "group": "category",
+      "english": "A situation or event, not something the person does. Drawn with rounded corners.",
+      "section": "EEMM category names. CLINICAL TERMINOLOGY — follow the published PBT/ACT translation in your language if one exists. \"prefix\" is printed on the box itself and must stay short.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "categoryGroup.dimension",
+      "group": "categoryGroup",
+      "english": "Psychological dimensions",
+      "section": "Headings above the category buttons in the node editor.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "categoryGroup.level",
+      "group": "categoryGroup",
+      "english": "Levels",
+      "section": "Headings above the category buttons in the node editor.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "categoryGroup.other",
+      "group": "categoryGroup",
+      "english": "Context and unclassified",
+      "section": "Headings above the category buttons in the node editor.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "strength.1",
+      "group": "strength",
+      "english": "A little",
+      "section": "How strong an influence is. Three levels only.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "strength.2",
+      "group": "strength",
+      "english": "Moderately",
+      "section": "How strong an influence is. Three levels only.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "strength.3",
+      "group": "strength",
+      "english": "A lot",
+      "section": "How strong an influence is. Three levels only.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "valence.neutral",
+      "group": "valence",
+      "english": "Not judged",
+      "section": "Whether a link helps the person. CLINICAL TERMINOLOGY.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "valence.helpful",
+      "group": "valence",
+      "english": "Helping",
+      "section": "Whether a link helps the person. CLINICAL TERMINOLOGY.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "valence.unhelpful",
+      "group": "valence",
+      "english": "Not helping",
+      "section": "Whether a link helps the person. CLINICAL TERMINOLOGY.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.proposed",
+      "group": "trial",
+      "english": "Being considered",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.adopted",
+      "group": "trial",
+      "english": "Tried, and it helped",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.ruledOut",
+      "group": "trial",
+      "english": "Tried, it did not help",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.proposedHint",
+      "group": "trial",
+      "english": "Still an idea. Drawn dashed, and left out of the baseline the comparison measures against.",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.adoptedHint",
+      "group": "trial",
+      "english": "It worked. It becomes part of the map and is drawn like everything else.",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.ruledOutHint",
+      "group": "trial",
+      "english": "It did not work. Kept but faded, so you can see what has already been tried.",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.dialogTitle",
+      "group": "trial",
+      "english": "What happened with this?",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.legend",
+      "group": "trial",
+      "english": "Where has this got to?",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "trial.lastRecorded",
+      "group": "trial",
+      "english": "Last recorded {when}",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [
+        "when"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "trial.notATrial",
+      "group": "trial",
+      "english": "Not a trial at all — make it an ordinary part of the map",
+      "section": "Recording what happened when an intervention was tried.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.title",
+      "group": "analysis",
+      "english": "Analysis",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.summary",
+      "group": "analysis",
+      "english": "What this network shows",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.central",
+      "group": "analysis",
+      "english": "Most connected",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.loops",
+      "group": "analysis",
+      "english": "Feedback loops",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.leverage",
+      "group": "analysis",
+      "english": "Where change might spread furthest",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.paths",
+      "group": "analysis",
+      "english": "Trace a pathway",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.whatIf",
+      "group": "analysis",
+      "english": "What if",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.empty",
+      "group": "analysis",
+      "english": "Add nodes and connections to see an analysis.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.stats",
+      "group": "analysis",
+      "english": "{nodes} nodes · {edges} connections · density {density}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "nodes",
+        "edges",
+        "density"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.scopeAll",
+      "group": "analysis",
+      "english": "All connections",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.scopeUnhelpful",
+      "group": "analysis",
+      "english": "Maladaptive",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.scopeHelpful",
+      "group": "analysis",
+      "english": "Adaptive",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.centralNote",
+      "group": "analysis",
+      "english": "Strength counts how much influence flows in and out. It is the centrality measure with the most support for picking treatment targets, but a central node is not automatically the right one to push on.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.scopeUnhelpfulNote",
+      "group": "analysis",
+      "english": "Counting only the arrows you marked as not helping. A high score here is a process holding the problem together.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.scopeHelpfulNote",
+      "group": "analysis",
+      "english": "Counting only the arrows you marked as helping. A high score here is something the person already has going for them — often worth building on rather than adding something new.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.excludedNote_one",
+      "group": "analysis",
+      "english": "{count} unjudged connection is excluded from both splits, so they will not add up to the combined figures.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.excludedNote_other",
+      "group": "analysis",
+      "english": "{count} unjudged connections are excluded from both splits, so they will not add up to the combined figures.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.noneMarkedHelpful",
+      "group": "analysis",
+      "english": "Nothing is marked as helping yet. Open a connection and set whether it helps to fill this in.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.noneMarkedUnhelpful",
+      "group": "analysis",
+      "english": "Nothing is marked as not helping yet. Open a connection and set whether it helps to fill this in.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colNode",
+      "group": "analysis",
+      "english": "Node",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colIn",
+      "group": "analysis",
+      "english": "In",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colOut",
+      "group": "analysis",
+      "english": "Out",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colStrength",
+      "group": "analysis",
+      "english": "Strength",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colNetOutward",
+      "group": "analysis",
+      "english": "Net outward",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipEntryPoint",
+      "group": "analysis",
+      "english": "entry point",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipEndpoint",
+      "group": "analysis",
+      "english": "endpoint",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipUnconnected",
+      "group": "analysis",
+      "english": "unconnected",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipNothingHelping",
+      "group": "analysis",
+      "english": "nothing helping",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipNothingUnhelpful",
+      "group": "analysis",
+      "english": "nothing unhelpful",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.reinforcing",
+      "group": "analysis",
+      "english": "Reinforcing",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.balancing",
+      "group": "analysis",
+      "english": "Balancing",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.reinforcingHelp",
+      "group": "analysis",
+      "english": "Self-sustaining. An increase anywhere in the loop comes back around as a further increase, which is why the problem keeps going after the trigger has passed.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.balancingHelp",
+      "group": "analysis",
+      "english": "Self-correcting. Something in this loop pushes back, which usually means a natural brake.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.noLoops",
+      "group": "analysis",
+      "english": "No loops found.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.manyLoops",
+      "group": "analysis",
+      "english": "This network has many loops. Only the strongest are listed.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.loopSteps_one",
+      "group": "analysis",
+      "english": "{count} step, gain {gain}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "gain"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.loopSteps_other",
+      "group": "analysis",
+      "english": "{count} steps, gain {gain}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "gain"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.heuristicWarning",
+      "group": "analysis",
+      "english": "These figures describe the map you drew, not the person. They assume influence is linear and immediate, which it is not. Use them to think with, never as a prediction.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colIfReduced",
+      "group": "analysis",
+      "english": "If this were reduced",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colBenefit",
+      "group": "analysis",
+      "english": "Modelled benefit",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colReach",
+      "group": "analysis",
+      "english": "Reach",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.wouldAlsoSuppress",
+      "group": "analysis",
+      "english": "Would also suppress {labels}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.chipNoDampening",
+      "group": "analysis",
+      "english": "no dampening",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.from",
+      "group": "analysis",
+      "english": "From",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.to",
+      "group": "analysis",
+      "english": "To",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.choose",
+      "group": "analysis",
+      "english": "Choose…",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.noRoute",
+      "group": "analysis",
+      "english": "No route from one to the other.",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.routeStats_one",
+      "group": "analysis",
+      "english": "{count} route · {up} increasing · {down} decreasing · net {net}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "up",
+        "down",
+        "net"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.routeStats_other",
+      "group": "analysis",
+      "english": "{count} routes · {up} increasing · {down} decreasing · net {net}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "up",
+        "down",
+        "net"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.pathSteps_one",
+      "group": "analysis",
+      "english": "{count} step, effect {effect}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "effect"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.pathSteps_other",
+      "group": "analysis",
+      "english": "{count} steps, effect {effect}",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "count",
+        "effect"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.increases",
+      "group": "analysis",
+      "english": "increases",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.decreases",
+      "group": "analysis",
+      "english": "decreases",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colNow",
+      "group": "analysis",
+      "english": "Now",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.colWithThis",
+      "group": "analysis",
+      "english": "With this",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.rowReinforcing",
+      "group": "analysis",
+      "english": "Reinforcing loops",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.rowBalancing",
+      "group": "analysis",
+      "english": "Balancing loops",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.rowAmplification",
+      "group": "analysis",
+      "english": "Modelled amplification",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.newBrakes",
+      "group": "analysis",
+      "english": "New brakes on the system",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.badgeNewBalancing",
+      "group": "analysis",
+      "english": "new balancing",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.howItActs",
+      "group": "analysis",
+      "english": "How it acts on each cycle",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.mechSelfCorrecting",
+      "group": "analysis",
+      "english": "self-correcting",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.mechSteadyPressure",
+      "group": "analysis",
+      "english": "steady pressure",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.mechPushedHarder",
+      "group": "analysis",
+      "english": "pushed harder",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.mechUntouched",
+      "group": "analysis",
+      "english": "untouched",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "analysis.pressureOn",
+      "group": "analysis",
+      "english": "on {labels} · needs keeping up",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "analysis.holdsOnItsOwn",
+      "group": "analysis",
+      "english": "holds on its own",
+      "section": "The Analysis side panel: tab names, table column headings and explanatory notes.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "summary.noNodes",
+      "group": "summary",
+      "english": "Add some nodes to see an analysis.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "summary.noEdges",
+      "group": "summary",
+      "english": "Nothing is connected yet. Add connections to see how the parts influence each other.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "summary.mostConnected_one",
+      "group": "summary",
+      "english": "**{label}** is the most connected part of this network ({inDegree} influence coming in, {outDegree} going out). Central nodes are often where change spreads furthest, though they can also be the hardest to shift directly.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "label",
+        "inDegree",
+        "outDegree"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.mostConnected_other",
+      "group": "summary",
+      "english": "**{label}** is the most connected part of this network ({inDegree} influences coming in, {outDegree} going out). Central nodes are often where change spreads furthest, though they can also be the hardest to shift directly.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "label",
+        "inDegree",
+        "outDegree"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.reinforcing_one",
+      "group": "summary",
+      "english": "There is **{count} reinforcing loop** here. These are self-sustaining cycles: they keep going even after whatever started them has passed.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.reinforcing_other",
+      "group": "summary",
+      "english": "There are **{count} reinforcing loops** here. These are self-sustaining cycles: they keep going even after whatever started them has passed.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.tightestLoop",
+      "group": "summary",
+      "english": " The tightest is {path}.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "path"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.noReinforcing",
+      "group": "summary",
+      "english": "No reinforcing loops were found. Worth asking whether anything here feeds back on itself, because feedback is often what makes a problem persist.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "summary.balancing_one",
+      "group": "summary",
+      "english": "{count} balancing loop found. These are self-correcting and often mark where the person already has some natural brake on the problem.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.balancing_other",
+      "group": "summary",
+      "english": "{count} balancing loops found. These are self-correcting and often mark where the person already has some natural brake on the problem.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.sources_one",
+      "group": "summary",
+      "english": "{labels} influences others but nothing in the network influences it back. Entry points like this are sometimes the most tractable place to start.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.sources_other",
+      "group": "summary",
+      "english": "{labels} influence others but nothing in the network influences them back. Entry points like this are sometimes the most tractable place to start.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.leverage_one",
+      "group": "summary",
+      "english": "Reducing **{label}** has the widest modelled effect, reaching {reach} other node.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "label",
+        "reach"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.leverage_other",
+      "group": "summary",
+      "english": "Reducing **{label}** has the widest modelled effect, reaching {reach} other nodes.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "label",
+        "reach"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.leverageCaveat_one",
+      "group": "summary",
+      "english": " Note that it would also suppress {labels}, which is tied to links you marked as helping.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.leverageCaveat_other",
+      "group": "summary",
+      "english": " Note that it would also suppress {labels}, which are tied to links you marked as helping.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.isolated_one",
+      "group": "summary",
+      "english": "{labels} is not connected to anything yet.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.isolated_other",
+      "group": "summary",
+      "english": "{labels} are not connected to anything yet.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [
+        "labels"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "summary.diverges",
+      "group": "summary",
+      "english": "Some parts of this network amplify without limit when modelled, which usually means strong reinforcing loops with no dampening. Treat the leverage figures as indicative only.",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "summary.caveat",
+      "group": "summary",
+      "english": "_These figures describe the map you drew, not the person. They are a structured way to look at your own thinking, not a prediction of what will happen._",
+      "section": "The written, plain-language summary of the network in the Analysis panel. Whole sentences assembled at runtime — keep every {placeholder}.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.ariaLabel",
+      "group": "guided",
+      "english": "Guided build",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.stepOf",
+      "group": "guided",
+      "english": "Step {current} of {total}",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [
+        "current",
+        "total"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "guided.done",
+      "group": "guided",
+      "english": "Done. Move on when you are ready.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.footer",
+      "group": "guided",
+      "english": "You can leave the guide at any point and keep everything you have built. The steps are a scaffold, not a form to complete.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step1Title",
+      "group": "guided",
+      "english": "1. Start with the context",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step1Body",
+      "group": "guided",
+      "english": "Use the Event / context button and add the situation this is about: what happened, where, with whom. It gets a rounded box, because it is not something the person is doing.\n\nStarting here is not a formality. In a functional assessment the same thought or action means different things in different situations, so the context is what makes everything after it interpretable.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step1Nudge",
+      "group": "guided",
+      "english": "Add an event or context box to begin.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step2Title",
+      "group": "guided",
+      "english": "2. Add the response and what follows",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step2Body",
+      "group": "guided",
+      "english": "Now add what happens inside (a thought, feeling or urge) and what the person does or what results. Connect them in order, from the context onwards.\n\nThat is the three-term contingency, the unit a functional assessment is built from. Everything else grows out of it.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step2NudgeNodes",
+      "group": "guided",
+      "english": "Add two more boxes: the internal response, then what happens.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step2NudgeEdges",
+      "group": "guided",
+      "english": "Now connect them: context → internal response → what happens.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step3Title",
+      "group": "guided",
+      "english": "3. Check whether it loops back",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step3Body",
+      "group": "guided",
+      "english": "Look at the end of your chain and ask: does that feed back into anything earlier? Poor sleep causes worry, but worry also causes poor sleep.\n\nFeedback is usually the answer to why a problem persists long after whatever started it has gone.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step3Nudge",
+      "group": "guided",
+      "english": "Nothing loops back yet. Does the consequence feed anything earlier?",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step4Title",
+      "group": "guided",
+      "english": "4. Add what else is involved",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step4Body",
+      "group": "guided",
+      "english": "What else is caught up in this? Add a node for anything affected by the consequence that also feeds back into the response.\n\nAmplifiers matter here. Fatigue is not just another problem, it makes everything else feel more threatening.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step4Nudge",
+      "group": "guided",
+      "english": "Add at least one more element.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step5Title",
+      "group": "guided",
+      "english": "5. Add what helps",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step5Body",
+      "group": "guided",
+      "english": "Not everything makes things worse. Add something that reduces one of these problems, draw it as a decreasing link, and mark that link as Helping.\n\nThis is often the part people skip, and it is where the intervention usually lives.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step5NudgeDecrease",
+      "group": "guided",
+      "english": "Add something that reduces one of these, drawn as a decreasing link.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step5NudgeHelpful",
+      "group": "guided",
+      "english": "Mark that link as Helping, so the map shows what is working.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step6Title",
+      "group": "guided",
+      "english": "6. Map what gets in the way",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step6Body",
+      "group": "guided",
+      "english": "Now the hard part. What stops the helpful thing from happening?\n\nThis is why \"just exercise more\" lands so badly. The person already knows it would help. Something in the system is suppressing it, and until that is visible the advice has nowhere to go.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "guided.step6Nudge",
+      "group": "guided",
+      "english": "Add a link that suppresses the thing that helps.",
+      "section": "The step-by-step guided build panel. Long-form teaching text.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.intro",
+      "group": "snapshots",
+      "english": "Save the network as it stands now, then come back and draw it again later. Nothing is overwritten.",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.labelPlaceholder",
+      "group": "snapshots",
+      "english": "Label, e.g. Intake or Session 6",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.labelAria",
+      "group": "snapshots",
+      "english": "Label for this timepoint",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.saveButton",
+      "group": "snapshots",
+      "english": "Save timepoint",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.none",
+      "group": "snapshots",
+      "english": "No timepoints saved yet.",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.meta",
+      "group": "snapshots",
+      "english": "{when} · {nodes} nodes · {edges} connections",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [
+        "when",
+        "nodes",
+        "edges"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.deleteAria",
+      "group": "snapshots",
+      "english": "Delete timepoint {label}",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [
+        "label"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.compare",
+      "group": "snapshots",
+      "english": "Compare",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.earlier",
+      "group": "snapshots",
+      "english": "Earlier",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.later",
+      "group": "snapshots",
+      "english": "Later",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.changes_one",
+      "group": "snapshots",
+      "english": "{count} change",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.changes_other",
+      "group": "snapshots",
+      "english": "{count} changes",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "snapshots.downloadComparison",
+      "group": "snapshots",
+      "english": "Download comparison (CSV)",
+      "section": "The Timepoints panel: saving the map at a point in time and comparing two.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "structure.empty",
+      "group": "structure",
+      "english": "Nothing here yet. Add a node to begin.",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "structure.nodes",
+      "group": "structure",
+      "english": "Nodes ({count})",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "structure.connections",
+      "group": "structure",
+      "english": "Connections ({count})",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "structure.noConnections",
+      "group": "structure",
+      "english": "None yet.",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "structure.nodeMetaDistress",
+      "group": "structure",
+      "english": " · distress {value}",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "value"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "structure.nodeMetaFrequency",
+      "group": "structure",
+      "english": " · frequency {value}",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "value"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "structure.deleteNodeAria",
+      "group": "structure",
+      "english": "Delete node {label}",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "label"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "structure.deleteEdgeAria",
+      "group": "structure",
+      "english": "Delete connection {sentence}",
+      "section": "The List view — the keyboard- and screen-reader-accessible version of the map.",
+      "placeholders": [
+        "sentence"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "templates.intro",
+      "group": "templates",
+      "english": "Starting points, not formulations. Replace the labels with the person's own words, and delete anything that does not fit. A template that goes unchallenged is worse than a blank canvas.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.blankName",
+      "group": "templates",
+      "english": "Blank canvas",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.blankDescription",
+      "group": "templates",
+      "english": "Start from nothing.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.abcName",
+      "group": "templates",
+      "english": "Three-term contingency",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.abcDescription",
+      "group": "templates",
+      "english": "The starting scaffold: context, internal response, consequence. Build outward from here.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.worryName",
+      "group": "templates",
+      "english": "Worry and sleep cycle",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.worryDescription",
+      "group": "templates",
+      "english": "A worked example. Useful for showing what a reinforcing loop looks like.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.moodName",
+      "group": "templates",
+      "english": "Low mood and withdrawal",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.moodDescription",
+      "group": "templates",
+      "english": "A common behavioural activation pattern. Put it in the person's own words before using it.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.painName",
+      "group": "templates",
+      "english": "Chronic pain and avoidance",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templates.painDescription",
+      "group": "templates",
+      "english": "A fear-avoidance pattern, with the deconditioning loop that usually maintains it.",
+      "section": "Names and descriptions of the starting-point maps in the Templates dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.abcTrigger",
+      "group": "templateNodes",
+      "english": "Trigger or situation",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.abcThought",
+      "group": "templateNodes",
+      "english": "Thought or feeling",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.abcAction",
+      "group": "templateNodes",
+      "english": "What I do",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worryCriticism",
+      "group": "templateNodes",
+      "english": "Criticism at work",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worryJobSecurity",
+      "group": "templateNodes",
+      "english": "Worry about job security",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worrySleep",
+      "group": "templateNodes",
+      "english": "Difficulty sleeping",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worryFatigue",
+      "group": "templateNodes",
+      "english": "Fatigue",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worryExercise",
+      "group": "templateNodes",
+      "english": "Exercise",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.worryWithdrawal",
+      "group": "templateNodes",
+      "english": "Social withdrawal",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodLow",
+      "group": "templateNodes",
+      "english": "Low mood",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodStayingHome",
+      "group": "templateNodes",
+      "english": "Staying home",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodFewerThings",
+      "group": "templateNodes",
+      "english": "Fewer things that matter to me",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodBurden",
+      "group": "templateNodes",
+      "english": "I am a burden",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodContact",
+      "group": "templateNodes",
+      "english": "Contact with friends",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.moodNoticing",
+      "group": "templateNodes",
+      "english": "Noticing small good moments",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painPain",
+      "group": "templateNodes",
+      "english": "Pain",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painFear",
+      "group": "templateNodes",
+      "english": "Fear of making it worse",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painAvoiding",
+      "group": "templateNodes",
+      "english": "Avoiding activity",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painDeconditioning",
+      "group": "templateNodes",
+      "english": "Deconditioning",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painDoingAnyway",
+      "group": "templateNodes",
+      "english": "Doing what matters anyway",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNodes.painWillingness",
+      "group": "templateNodes",
+      "english": "Willingness to feel discomfort",
+      "section": "The box labels inside each template. Everyday clinical phrasing, not technical terms — say it the way a clinician in your language would.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "templateNote",
+      "group": "templateNote",
+      "english": "This is a starting point, not a formulation. Replace the labels with the person's own words.",
+      "section": "Appended to a template description when it is loaded.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.intro",
+      "group": "exportDialog",
+      "english": "The CSV formats load straight into R or Python. The adjacency matrix is what qgraph, igraph and networkx expect as input.",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.json",
+      "group": "exportDialog",
+      "english": "Network (JSON)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.edges",
+      "group": "exportDialog",
+      "english": "Edge list (CSV)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.nodes",
+      "group": "exportDialog",
+      "english": "Node list (CSV)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.matrix",
+      "group": "exportDialog",
+      "english": "Adjacency matrix (CSV)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.report",
+      "group": "exportDialog",
+      "english": "Analysis report (Markdown)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.events",
+      "group": "exportDialog",
+      "english": "Build log (CSV)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.png",
+      "group": "exportDialog",
+      "english": "Image (PNG)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.svg",
+      "group": "exportDialog",
+      "english": "Vector (SVG)",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "exportDialog.print",
+      "group": "exportDialog",
+      "english": "Print / PDF",
+      "section": "The Export dialog. File format names — keep JSON, CSV, PNG, SVG, PDF as they are.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "share.title",
+      "group": "share",
+      "english": "Share link",
+      "section": "The Share link dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "share.intro",
+      "group": "share",
+      "english": "The whole network is encoded in the link itself. There is no server copy, and the part carrying your content is never sent in the web request, so nothing is stored or logged anywhere. Anyone with the link can open and edit their own copy.",
+      "section": "The Share link dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "share.building",
+      "group": "share",
+      "english": "Building the link…",
+      "section": "The Share link dialog.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "share.tooLong",
+      "group": "share",
+      "english": "This network is too large for a link ({length} characters). Export it as JSON and send the file instead.",
+      "section": "The Share link dialog.",
+      "placeholders": [
+        "length"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "clearDialog.title",
+      "group": "clearDialog",
+      "english": "Clear this network?",
+      "section": "The confirmation dialog for clearing the whole map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "clearDialog.body",
+      "group": "clearDialog",
+      "english": "This removes all {nodes} nodes and {edges} connections. You can undo it, and any saved timepoints are kept.",
+      "section": "The confirmation dialog for clearing the whole map.",
+      "placeholders": [
+        "nodes",
+        "edges"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "clearDialog.confirm",
+      "group": "clearDialog",
+      "english": "Clear everything",
+      "section": "The confirmation dialog for clearing the whole map.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "kernel.title",
+      "group": "kernel",
+      "english": "Treatment kernels",
+      "section": "The Treatment kernels dialog (a feature still in development).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "kernel.warning",
+      "group": "kernel",
+      "english": "In development. Nothing behind this button yet.",
+      "section": "The Treatment kernels dialog (a feature still in development).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "kernel.p1",
+      "group": "kernel",
+      "english": "The plan is a vocabulary of treatment kernels: the smallest units of therapeutic change, in language consistent enough to attach to the processes on a map. Pick a process, and see which kernels are known to act on it.",
+      "section": "The Treatment kernels dialog (a feature still in development).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "kernel.p2",
+      "group": "kernel",
+      "english": "The hard part is deciding what counts as one kernel and how finely to split them, and that is not settled yet.",
+      "section": "The Treatment kernels dialog (a feature still in development).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "kernel.p3",
+      "group": "kernel",
+      "english": "If you have ideas about how this database should be organised, Kean would like to hear them:",
+      "section": "The Treatment kernels dialog (a feature still in development).",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.title",
+      "group": "help",
+      "english": "How to use this",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingHeading",
+      "group": "help",
+      "english": "Building a map",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingEvent",
+      "group": "help",
+      "english": "the situation this is about. Start here; on an empty canvas any click creates one. It gets a rounded box, because it is not something the person is doing.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingAdd",
+      "group": "help",
+      "english": "a process: a thought, feeling, urge, or action. Square box, coloured by its EEMM category.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingConnect",
+      "group": "help",
+      "english": "click the influencing box, then the one it influences. Then pick, in one click, whether it increases or decreases it and by how much.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingDelete",
+      "group": "help",
+      "english": "click any box or arrow. Or select something and press Delete.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.buildingDoubleClick",
+      "group": "help",
+      "english": "Double-click a box to edit it. Drag to move, in any mode.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingHeading",
+      "group": "help",
+      "english": "Reading the picture",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingArrowheads",
+      "group": "help",
+      "english": "A **filled** arrowhead means increases; a **hollow** one means decreases. Thicker lines with bigger heads are stronger influences. No numbers, and no reliance on colour.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingReciprocal",
+      "group": "help",
+      "english": "A line with a head at both ends means the two influence each other.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingShapes",
+      "group": "help",
+      "english": "Square boxes are processes; rounded boxes are events or contexts.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingColour",
+      "group": "help",
+      "english": "Arrows are black unless you have marked a link as helping (green) or not helping (red). Most links stay black: the marking is there for when you are testing whether something new breaks a loop.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.readingColourMode",
+      "group": "help",
+      "english": "The Up/down button switches arrow colour to show increases (blue) and decreases (orange) instead, for when the direction of influence is what you are reading for.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardHeading",
+      "group": "help",
+      "english": "Keyboard",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardTools",
+      "group": "help",
+      "english": "select · event/context · add node · connect · delete",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardConnectFromSelection",
+      "group": "help",
+      "english": "Select a box then press C and your next click finishes the link.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardDelete",
+      "group": "help",
+      "english": "Delete or Backspace removes what is selected.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardEscape",
+      "group": "help",
+      "english": "Esc cancels what you are doing. Press it again to return to Select.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardView",
+      "group": "help",
+      "english": "F fit view · O organise · M ratings · G grid",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.keyboardEditing",
+      "group": "help",
+      "english": "Ctrl/Cmd+Z undo · Shift+click to select several · Ctrl/Cmd+C and Ctrl/Cmd+V copy and paste · Ctrl/Cmd+D duplicate",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.organiseHeading",
+      "group": "help",
+      "english": "Organise",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.organiseBody",
+      "group": "help",
+      "english": "Snaps the boxes into rows and columns that follow the arrows, with the main context at the leading edge. It tries the layout both across and down and keeps whichever fits your screen better. Feedback loops are ignored when deciding the order, so they read as loops rather than scrambling the sequence.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.mouselessHeading",
+      "group": "help",
+      "english": "Without a mouse",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.mouselessBody",
+      "group": "help",
+      "english": "List view shows the whole map as text you can move through with Tab and edit from the keyboard. It is also what a screen reader reads, since a canvas is invisible to one.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.openListView",
+      "group": "help",
+      "english": "Open list view",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.cautionHeading",
+      "group": "help",
+      "english": "A caution about the analysis",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "help.cautionBody",
+      "group": "help",
+      "english": "Centrality, loops and leverage describe the map that was drawn, not the person. They assume influence is linear and immediate, which it is not. They are a structured way to interrogate your own thinking, and they are worth exactly as much as the ratings they were built from.",
+      "section": "The Help dialog. The most-read text in the tool.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.title",
+      "group": "about",
+      "english": "About",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.intro",
+      "group": "about",
+      "english": "A free, open-source tool for mapping process-based networks: the functional relationships between the processes that maintain psychological suffering and wellbeing.",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.groundingHeading",
+      "group": "about",
+      "english": "Grounding",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.groundingBody",
+      "group": "about",
+      "english": "The categories and the way this tool thinks about processes come from the Extended Evolutionary Meta-Model set out in the process-based therapy work of **Steven C. Hayes and Stefan G. Hofmann**: affect, cognition, attention, self, motivation and overt behaviour, situated in biophysiological and sociocultural levels, and always read in context.",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.inspiration",
+      "group": "about",
+      "english": "The idea of doing this in a browser was inspired by Joseph Ciarrochi’s",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.madeByHeading",
+      "group": "about",
+      "english": "Who made this",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.madeByBody",
+      "group": "about",
+      "english": "Tan Kean Sian conceived this tool and directed its development; all the code was written with Claude, Anthropic's AI assistant. Questions, or suggestions for improving it, are welcome at",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.dataHeading",
+      "group": "about",
+      "english": "Where your data lives",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.dataBody",
+      "group": "about",
+      "english": "In your browser, and nowhere else. No account, no server, no analytics. Clearing your browser data deletes your maps, so export anything you want to keep. Share links carry the map inside the link itself rather than uploading it anywhere.",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "about.licence",
+      "group": "about",
+      "english": "MIT licensed. Contributions welcome.",
+      "section": "The About dialog: credits, grounding in the literature, and the privacy statement.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "error.canvasTitle",
+      "group": "error",
+      "english": "The drawing canvas could not start",
+      "section": "Shown only when the drawing canvas fails to start.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "error.canvasHint",
+      "group": "error",
+      "english": "This usually means graphics acceleration is unavailable on this machine. Your network is safe. Open List view to read and edit it as text, and Export to get it out.",
+      "section": "Shown only when the drawing canvas fails to start.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "error.technicalDetail",
+      "group": "error",
+      "english": "Technical detail",
+      "section": "Shown only when the drawing canvas fails to start.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toast.copied_one",
+      "group": "toast",
+      "english": "Copied {count} box. Ctrl/Cmd+V to paste.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.copied_other",
+      "group": "toast",
+      "english": "Copied {count} boxes. Ctrl/Cmd+V to paste.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.pasted_one",
+      "group": "toast",
+      "english": "Pasted {count} box.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.pasted_other",
+      "group": "toast",
+      "english": "Pasted {count} boxes.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.duplicated_one",
+      "group": "toast",
+      "english": "Duplicated {count} box.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.duplicated_other",
+      "group": "toast",
+      "english": "Duplicated {count} boxes.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [
+        "count"
+      ],
+      "fixed": false
+    },
+    {
+      "key": "toast.hypothesisOn",
+      "group": "toast",
+      "english": "Hypothesis on. Anything you add now is a proposal, drawn dashed.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toast.sharedOpened",
+      "group": "toast",
+      "english": "Opened a shared network. It has not overwritten your saved work.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toast.imported",
+      "group": "toast",
+      "english": "Imported.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toast.importUnreadable",
+      "group": "toast",
+      "english": "Could not read that file.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "toast.importNotJson",
+      "group": "toast",
+      "english": "That file is not valid JSON.",
+      "section": "Brief messages that appear at the bottom of the screen and fade after a few seconds.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "language.title",
+      "group": "language",
+      "english": "Language",
+      "section": "The language picker itself.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "language.note",
+      "group": "language",
+      "english": "Translations are community-contributed and under review. The clinical vocabulary in particular may not yet be settled in every language.",
+      "section": "The language picker itself.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "language.contribute",
+      "group": "language",
+      "english": "Spotted a mistranslation? Corrections are very welcome at",
+      "section": "The language picker itself.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "language.draft",
+      "group": "language",
+      "english": "draft",
+      "section": "The language picker itself.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "a11y.canvas",
+      "group": "a11y",
+      "english": "Network canvas. A keyboard-accessible version of the same content is in List view.",
+      "section": "Screen-reader labels. Never visible on screen, but read aloud.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "a11y.toolbar",
+      "group": "a11y",
+      "english": "Tools",
+      "section": "Screen-reader labels. Never visible on screen, but read aloud.",
+      "placeholders": [],
+      "fixed": false
+    },
+    {
+      "key": "a11y.scopeTabs",
+      "group": "a11y",
+      "english": "Which connections to count",
+      "section": "Screen-reader labels. Never visible on screen, but read aloud.",
+      "placeholders": [],
+      "fixed": false
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { EventType, LogEvent, NodeId, PbtEdge, PbtNetwork, Position, Snapshot } from '../model/types';
+import type { EventType, LogEvent, NodeId, PbtEdge, PbtNetwork, PbtNode, Position, Snapshot } from '../model/types';
 import { weightOf } from '../model/types';
 import type { TrialState } from '../model/types';
 import type { EemmCategory, LinkValence, Strength } from '../model/eemm';
@@ -16,6 +16,18 @@ interface HistoryEntry {
   label: string;
 }
 
+export interface Clipboard {
+  nodes: PbtNode[];
+  edges: PbtEdge[];
+}
+
+/**
+ * How far each successive paste is nudged, in graph units. One grid square, so
+ * a pasted copy lands offset enough to be grabbable but close enough to read as
+ * a copy of the thing beside it.
+ */
+const PASTE_STEP = 40;
+
 export interface AppState {
   network: PbtNetwork;
   snapshots: Snapshot[];
@@ -30,6 +42,16 @@ export interface AppState {
   past: HistoryEntry[];
   future: HistoryEntry[];
 
+  /**
+   * What was last copied. Held in the store rather than the system clipboard:
+   * a PBT node carries category, ratings, notes and trial state, none of which
+   * survives a round trip through text, and reading the real clipboard needs a
+   * permission prompt that would be absurd for an offline tool.
+   */
+  clipboard: Clipboard | null;
+  /** How many times the current clipboard has been pasted, so copies cascade. */
+  pasteSerial: number;
+
   dirty: boolean;
   /** While on, anything added is marked as a proposal rather than a description. */
   hypothesis: boolean;
@@ -40,6 +62,9 @@ export interface AppState {
   select: (nodes: NodeId[], edge?: string | null) => void;
   clearSelection: () => void;
   setPendingSource: (id: NodeId | null) => void;
+
+  copySelection: () => number;
+  pasteClipboard: () => NodeId[];
 
   addNode: (opts: { label: string; category?: EemmCategory; position: Position; trial?: TrialState }) => NodeId;
   updateNode: (
@@ -53,6 +78,7 @@ export interface AppState {
     }>,
   ) => void;
   moveNode: (id: NodeId, position: Position, commit: boolean) => void;
+  applyPositions: (moves: { id: NodeId; position: Position }[], label: string) => void;
   deleteNode: (id: NodeId) => void;
 
   addEdge: (
@@ -137,6 +163,8 @@ export const useStore = create<AppState>((set, get) => {
     pendingSource: null,
     past: [],
     future: [],
+    clipboard: null,
+    pasteSerial: 0,
     dirty: false,
     hypothesis: false,
 
@@ -155,6 +183,76 @@ export const useStore = create<AppState>((set, get) => {
         }),
       }));
       logEvent('node.update', { id, trial });
+    },
+
+    /**
+     * Copy the selected boxes, and every arrow whose *both* ends are selected.
+     *
+     * An arrow with one end outside the selection has nowhere to land on paste,
+     * so it is dropped rather than being silently reattached to the original
+     * node — which would produce a connection the person never drew.
+     */
+    copySelection: () => {
+      const { network, selectedNodes } = get();
+      const ids = new Set(selectedNodes);
+      const nodes = network.nodes.filter((n) => ids.has(n.id));
+      if (nodes.length === 0) return 0;
+      const edges = network.edges.filter((e) => ids.has(e.source) && ids.has(e.target));
+      set({ clipboard: { nodes: deepClone(nodes), edges: deepClone(edges) }, pasteSerial: 0 });
+      return nodes.length;
+    },
+
+    /**
+     * Paste the clipboard as genuinely new nodes: fresh ids, fresh timestamps,
+     * everything else carried over. Labels are not suffixed with "(copy)" —
+     * a duplicated process usually gets renamed to the variant you actually
+     * meant, and an auto-suffix would just be one more thing to delete.
+     */
+    pasteClipboard: () => {
+      const { clipboard, pasteSerial } = get();
+      if (!clipboard || clipboard.nodes.length === 0) return [];
+
+      const offset = PASTE_STEP * (pasteSerial + 1);
+      const stamp = new Date().toISOString();
+      const idMap = new Map<NodeId, NodeId>();
+
+      const nodes: PbtNode[] = clipboard.nodes.map((n) => {
+        const id = uid('n');
+        idMap.set(n.id, id);
+        return {
+          ...deepClone(n),
+          id,
+          position: { x: n.position.x + offset, y: n.position.y + offset },
+          createdAt: stamp,
+          updatedAt: stamp,
+        };
+      });
+
+      const edges: PbtEdge[] = clipboard.edges.map((e) => ({
+        ...deepClone(e),
+        id: uid('e'),
+        source: idMap.get(e.source)!,
+        target: idMap.get(e.target)!,
+        createdAt: stamp,
+        updatedAt: stamp,
+      }));
+
+      pushHistory('Paste');
+      set((s) => ({
+        network: touch({
+          ...s.network,
+          nodes: [...s.network.nodes, ...nodes],
+          edges: [...s.network.edges, ...edges],
+        }),
+        // Selecting what was just pasted means the next Ctrl+V pastes the same
+        // thing again rather than a copy of a copy, and Delete undoes a paste
+        // without hunting for the new boxes.
+        selectedNodes: nodes.map((n) => n.id),
+        selectedEdge: null,
+        pasteSerial: s.pasteSerial + 1,
+      }));
+      logEvent('network.import', { paste: true, nodes: nodes.length, edges: edges.length });
+      return nodes.map((n) => n.id);
     },
 
     setTool: (t) => set({ tool: t, pendingSource: null, selectedEdge: null }),
@@ -206,6 +304,42 @@ export const useStore = create<AppState>((set, get) => {
         dirty: true,
       }));
       if (commit) logEvent('node.move', { id, position });
+    },
+
+    /**
+     * Reposition many nodes as one undoable action.
+     *
+     * Organise used to write its result through `moveNode(..., commit: false)`,
+     * once per box. That skipped `pushHistory` entirely, so the layout was not
+     * on the undo stack at all: Ctrl+Z after Organise reverted whatever you did
+     * *before* it, and the old positions came back with it. Committing per node
+     * instead would be just as wrong in the other direction, filling the stack
+     * with one entry per box. A layout is one action, so it gets one entry.
+     */
+    applyPositions: (moves, label) => {
+      if (moves.length === 0) return;
+      const next = new Map(moves.map((m) => [m.id, m.position]));
+      const { network } = get();
+      // Nothing actually moved (Organise on an already-tidy map) means nothing
+      // to undo. An empty history entry is worse than no entry: it costs a
+      // Ctrl+Z that appears to do nothing.
+      const changed = network.nodes.some((n) => {
+        const p = next.get(n.id);
+        return p !== undefined && (p.x !== n.position.x || p.y !== n.position.y);
+      });
+      if (!changed) return;
+
+      pushHistory(label);
+      set((s) => ({
+        network: touch({
+          ...s.network,
+          nodes: s.network.nodes.map((n) => {
+            const p = next.get(n.id);
+            return p ? { ...n, position: p } : n;
+          }),
+        }),
+      }));
+      logEvent('node.move', { count: moves.length, label });
     },
 
     deleteNode: (id) => {

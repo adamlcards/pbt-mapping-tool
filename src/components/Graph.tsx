@@ -1,16 +1,51 @@
 import { useEffect, useRef } from 'react';
 import cytoscape, { type Core, type ElementDefinition, type NodeSingular } from 'cytoscape';
 import { useStore } from '../state/store';
-import { CATEGORY_META, VALENCE_COLOUR, categoryFill, valenceColour } from '../model/eemm';
+import { CATEGORY_META, VALENCE_COLOUR, categoryFill, categoryPrefix, valenceColour } from '../model/eemm';
+import { useLocale } from '../i18n';
 import { layeredPositions, separateOverlaps } from './layout';
 import type { PbtNetwork, PbtNode } from '../model/types';
+import { t } from '../i18n/strings';
+
+/**
+ * What the colour of an arrow is allowed to mean.
+ *
+ * Only ever one thing at a time. Colour is the single strongest channel on the
+ * map, and letting it carry two meanings at once — helping-or-not *and*
+ * up-or-down — makes every arrow ambiguous: a red line would mean "unhelpful"
+ * on one map and "reduces" on another, with no way to tell which from looking.
+ *
+ *  valence   - the default and the textbook's: colour says whether the link is
+ *              helping. Direction stays in the arrowhead fill.
+ *  direction - colour says whether the source pushes the target up or down, for
+ *              people who asked to see decreasing influences at a glance.
+ *              Helpfulness is then not shown at all, which is the trade.
+ */
+export const EDGE_COLOUR_MODES = ['valence', 'direction'] as const;
+export type EdgeColourMode = (typeof EDGE_COLOUR_MODES)[number];
+
+/**
+ * Colours for direction mode. Deliberately not the valence pair: green/red
+ * there already means helping/not helping, and reusing it would suggest that
+ * "reduces" is bad, which is often the exact opposite of the truth (reducing
+ * avoidance is the goal). Blue up, orange down — a scale distinction, not a
+ * moral one.
+ */
+const DIRECTION_COLOUR = {
+  light: { increases: '#1f4f9c', decreases: '#c2521a' },
+  dark: { increases: '#7fb0f5', decreases: '#f0a06a' },
+} as const;
 
 interface Props {
   theme: 'light' | 'dark';
   showGrid: boolean;
+  edgeColour: EdgeColourMode;
+  /** Print each node's severity and frequency ratings on the box. */
+  showMetrics: boolean;
   selected: { nodes: string[]; edge: string | null };
   onCanvasClick: (position: { x: number; y: number }) => void;
-  onNodeClick: (id: string) => void;
+  /** `additive` is true when Shift was held: add to the selection, do not replace it. */
+  onNodeClick: (id: string, additive: boolean) => void;
   onNodeDoubleClick: (id: string) => void;
   onEdgeClick: (id: string) => void;
   onEdgeDoubleClick: (id: string) => void;
@@ -44,6 +79,8 @@ export interface GraphApi {
 export function Graph({
   theme,
   showGrid,
+  edgeColour,
+  showMetrics,
   selected,
   onCanvasClick,
   onNodeClick,
@@ -59,6 +96,9 @@ export function Graph({
   const moveNode = useStore((s) => s.moveNode);
   const tool = useStore((s) => s.tool);
   const pendingSource = useStore((s) => s.pendingSource);
+  // The category prefix is painted into the box, so a language change is a
+  // reason to rebuild the elements just as much as a theme change is.
+  const locale = useLocale((s) => s.code);
 
   const handlers = useRef({ onCanvasClick, onNodeClick, onNodeDoubleClick, onEdgeClick, onEdgeDoubleClick });
   handlers.current = { onCanvasClick, onNodeClick, onNodeDoubleClick, onEdgeClick, onEdgeDoubleClick };
@@ -67,6 +107,8 @@ export function Graph({
   const gridPainter = useRef<(() => void) | null>(null);
   const showGridRef = useRef(showGrid);
   showGridRef.current = showGrid;
+  const showMetricsRef = useRef(showMetrics);
+  showMetricsRef.current = showMetrics;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -85,7 +127,9 @@ export function Graph({
     cy.on('tap', (evt) => {
       if (evt.target === cy) handlers.current.onCanvasClick(evt.position);
     });
-    cy.on('tap', 'node', (evt) => handlers.current.onNodeClick(evt.target.id()));
+    cy.on('tap', 'node', (evt) =>
+      handlers.current.onNodeClick(evt.target.id(), Boolean((evt.originalEvent as MouseEvent | undefined)?.shiftKey)),
+    );
     cy.on('dbltap', 'node', (evt) => handlers.current.onNodeDoubleClick(evt.target.id()));
     cy.on('tap', 'edge', (evt) => handlers.current.onEdgeClick(evt.target.id()));
     cy.on('dbltap', 'edge', (evt) => handlers.current.onEdgeDoubleClick(evt.target.id()));
@@ -110,7 +154,7 @@ export function Graph({
           duration: 250,
         });
       },
-      tidy: () => runTidy(cy, moveNode, showGridRef.current),
+      tidy: () => runTidy(cy, showGridRef.current, showMetricsRef.current),
       pngDataUrl: ({ blackAndWhite, scale }) => {
         if (blackAndWhite) cy.container()?.classList.add('bw');
         cy.elements().removeClass('dim');
@@ -169,10 +213,10 @@ export function Graph({
     cy.style(makeStyle(theme));
     cy.batch(() => {
       cy.elements().remove();
-      cy.add(toElements(network, theme));
+      cy.add(toElements(network, theme, edgeColour, showMetrics));
     });
     cy.forceRender();
-  }, [network, theme]);
+  }, [network, theme, edgeColour, showMetrics, locale]);
 
   useEffect(() => {
     const cy = cyRef.current;
@@ -221,7 +265,7 @@ export function Graph({
       ref={containerRef}
       className={`graph tool-${tool}`}
       role="application"
-      aria-label="Network canvas. A keyboard-accessible version of the same content is in List view."
+      aria-label={t().a11y.canvas}
     />
   );
 }
@@ -242,15 +286,11 @@ export function Graph({
  * at exactly what is wanted here: cycles come out looking like cycles, and
  * tightly connected processes end up near each other.
  */
-function runTidy(
-  cy: Core,
-  moveNode: (id: string, p: { x: number; y: number }, commit: boolean) => void,
-  snapToGrid: boolean,
-): void {
+function runTidy(cy: Core, snapToGrid: boolean, showMetrics: boolean): void {
   const net = useStore.getState().network;
   if (net.nodes.length === 0) return;
 
-  const heights = new Map(net.nodes.map((n) => [n.id, boxSize(n).h]));
+  const heights = new Map(net.nodes.map((n) => [n.id, boxSize(n, showMetrics).h]));
   const seed = layeredPositions(net, { rankDir: 'LR', nodeWidth: NODE_W, nodeHeights: heights });
   if (seed.size === 0) return;
 
@@ -261,7 +301,7 @@ function runTidy(
   // Two boxes are not worth relaxing, and force-directed layouts look silly on
   // them. Keep the layered result.
   if (net.nodes.length < 4) {
-    persist(cy, moveNode);
+    persist(cy, 'Organise');
     fitSoon(cy);
     return;
   }
@@ -292,7 +332,7 @@ function runTidy(
     // cose leaves boxes overlapping because it reasons about points, not
     // rectangles. Separate them using the real box sizes.
     const current = new Map(cy.nodes().map((n) => [n.id(), { ...n.position() }]));
-    const sizes = new Map(net.nodes.map((n) => [n.id, { w: NODE_W, h: boxSize(n).h }]));
+    const sizes = new Map(net.nodes.map((n) => [n.id, { w: NODE_W, h: boxSize(n, showMetrics).h }]));
     let spread = separateOverlaps(current, sizes);
     if (snapToGrid) {
       spread = new Map(
@@ -306,17 +346,23 @@ function runTidy(
     cy.batch(() => {
       for (const [id, p] of spread) cy.getElementById(id).position(p);
     });
-    persist(cy, moveNode);
+    persist(cy, 'Organise');
     fitSoon(cy);
   });
   layout.run();
 }
 
-function persist(cy: Core, moveNode: (id: string, p: { x: number; y: number }, commit: boolean) => void): void {
-  cy.nodes().forEach((n) => {
+/**
+ * Write the finished layout back to the store as a single undoable action.
+ *
+ * See `applyPositions` in the store for why this is not a loop of `moveNode`.
+ */
+function persist(cy: Core, label: string): void {
+  const moves = cy.nodes().map((n) => {
     const p = n.position();
-    moveNode(n.id(), { x: Math.round(p.x), y: Math.round(p.y) }, false);
+    return { id: n.id(), position: { x: Math.round(p.x), y: Math.round(p.y) } };
   });
+  useStore.getState().applyPositions(moves, label);
 }
 
 function fitSoon(cy: Core): void {
@@ -336,20 +382,41 @@ const NODE_W = 180;
 const CHAR_W = 7.4;
 const LINE_H = 17;
 
+/**
+ * The severity / frequency line, or nothing at all.
+ *
+ * Only rendered for ratings that were actually given. `undefined` and `0` are
+ * different answers — "not rated" versus "rated, and none" — and printing 0 for
+ * an unrated node would put a number on the map that nobody entered.
+ */
+function metricText(node: PbtNode): string | null {
+  const strings = t().nodeEditor;
+  const parts: string[] = [];
+  if (node.severity !== undefined) parts.push(`${strings.severityShort} ${node.severity}`);
+  if (node.frequency !== undefined) parts.push(`${strings.frequencyShort} ${node.frequency}`);
+  return parts.length > 0 ? parts.join('  ·  ') : null;
+}
+
 /** Two-line minimum: the category line, then the wrapped content. */
-function boxSize(node: PbtNode): { w: number; h: number; tw: number } {
-  const meta = CATEGORY_META[node.category];
+function boxSize(node: PbtNode, showMetrics = false): { w: number; h: number; tw: number } {
   const width = NODE_W;
   const textWidth = width - 22;
   const perLine = Math.max(1, Math.floor(textWidth / CHAR_W));
   const contentLines = Math.min(4, Math.max(1, Math.ceil(node.label.length / perLine)));
-  const prefixLines = meta.prefix ? 1 : 0;
-  return { w: width, h: Math.round((contentLines + prefixLines) * LINE_H + 22), tw: textWidth };
+  const prefixLines = categoryPrefix(node.category) ? 1 : 0;
+  const metricLines = showMetrics && metricText(node) ? 1 : 0;
+  return {
+    w: width,
+    h: Math.round((contentLines + prefixLines + metricLines) * LINE_H + 22),
+    tw: textWidth,
+  };
 }
 
-function nodeText(node: PbtNode): string {
-  const meta = CATEGORY_META[node.category];
-  return meta.prefix ? `${meta.prefix}:\n${node.label}` : node.label;
+function nodeText(node: PbtNode, showMetrics = false): string {
+  const prefix = categoryPrefix(node.category);
+  const head = prefix ? `${prefix}:\n${node.label}` : node.label;
+  const metrics = showMetrics ? metricText(node) : null;
+  return metrics ? `${head}\n${metrics}` : head;
 }
 
 /**
@@ -373,18 +440,23 @@ function reciprocalPairs(net: PbtNetwork): Map<string, string> {
   return partner;
 }
 
-function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition[] {
+function toElements(
+  net: PbtNetwork,
+  theme: 'light' | 'dark',
+  edgeColour: EdgeColourMode = 'valence',
+  showMetrics = false,
+): ElementDefinition[] {
   const els: ElementDefinition[] = [];
 
   for (const n of net.nodes) {
     const meta = CATEGORY_META[n.category];
     const skin = categoryFill(n.category, theme);
-    const box = boxSize(n);
+    const box = boxSize(n, showMetrics);
     els.push({
       group: 'nodes',
       data: {
         id: n.id,
-        label: nodeText(n),
+        label: nodeText(n, showMetrics),
         colour: skin.fill,
         border: skin.border,
         textColour: skin.text,
@@ -415,7 +487,16 @@ function toElements(net: PbtNetwork, theme: 'light' | 'dark'): ElementDefinition
     // claim should win, so the shared line stays neutral. Each arrowhead's
     // fill (solid/hollow) still comes from its own direction, independently.
     const valence = back && back.valence !== e.valence ? 'neutral' : e.valence;
-    const colour = valenceColour(valence, theme);
+    // Direction mode has the same problem in the reciprocal case and takes the
+    // same way out: a single stroke cannot be two colours, so a pair that runs
+    // up one way and down the other falls back to the neutral line and lets the
+    // two arrowheads carry the distinction on their own.
+    const colour =
+      edgeColour === 'direction'
+        ? back && back.direction !== e.direction
+          ? valenceColour('neutral', theme)
+          : DIRECTION_COLOUR[theme][e.direction]
+        : valenceColour(valence, theme);
     // The line's thickness takes the stronger of the two directions — a
     // single stroke can't taper along its length, so this is shared and
     // identical on both edges below, deliberately.
@@ -719,10 +800,11 @@ function buildSvg(net: PbtNetwork): string {
     parts.push(
       `<rect x="${p.x - box.w / 2}" y="${p.y - box.h / 2}" width="${box.w}" height="${box.h}" rx="${rx}" fill="${meta.colour}" stroke="${meta.border}" stroke-width="1.5"${dash}${fade}/>`,
     );
-    const lines = meta.prefix ? [`${meta.prefix}:`, ...wrap(n.label, 24)] : wrap(n.label, 24);
+    const prefix = categoryPrefix(n.category);
+    const lines = prefix ? [`${prefix}:`, ...wrap(n.label, 24)] : wrap(n.label, 24);
     const startY = p.y - ((lines.length - 1) * LINE_H) / 2 + 4;
     lines.forEach((line, i) => {
-      const bold = meta.prefix && i === 0 ? ' font-weight="700"' : '';
+      const bold = prefix && i === 0 ? ' font-weight="700"' : '';
       parts.push(
         `<text x="${p.x}" y="${startY + i * LINE_H}" font-size="11.5" text-anchor="middle" fill="#15181c"${bold}>${escapeXml(line)}</text>`,
       );

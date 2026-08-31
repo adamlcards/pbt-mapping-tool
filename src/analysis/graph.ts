@@ -42,13 +42,22 @@ function coefficient(signedStrength: number): number {
   return signedStrength < 0 ? -magnitude : magnitude;
 }
 
-export function buildGraph(net: PbtNetwork): GraphView {
+/**
+ * Build the adjacency view, optionally over a subset of the arrows.
+ *
+ * `edgeFilter` deliberately narrows the *edges* only. Every node stays in the
+ * view even when none of its arrows survive the filter, because "this process
+ * has no helpful connections at all" is exactly the finding a valence-split
+ * analysis exists to surface, and dropping the node would hide it.
+ */
+export function buildGraph(net: PbtNetwork, edgeFilter?: (e: PbtNetwork['edges'][number]) => boolean): GraphView {
   const nodeIds = net.nodes.map((n) => n.id);
   const index = new Map(nodeIds.map((id, i) => [id, i]));
   const labels = new Map(net.nodes.map((n) => [n.id, n.label]));
 
   const edges: EffectiveEdge[] = net.edges
     .filter((e) => index.has(e.source) && index.has(e.target))
+    .filter((e) => (edgeFilter ? edgeFilter(e) : true))
     .map((e) => ({
       id: e.id,
       source: e.source,

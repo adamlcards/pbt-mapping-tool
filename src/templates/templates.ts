@@ -1,3 +1,4 @@
+import { t, type Strings } from '../i18n/strings';
 import type { PbtNetwork } from '../model/types';
 import { createEdge, createNetwork, createNode } from '../model/factory';
 import type { EemmCategory, LinkValence, Strength } from '../model/eemm';
@@ -18,9 +19,10 @@ import type { EemmCategory, LinkValence, Strength } from '../model/eemm';
 
 interface Spec {
   id: string;
-  name: string;
-  description: string;
-  nodes: [label: string, category: EemmCategory, x: number, y: number][];
+  /** Keys into the catalogue, not text. Everything a user reads is translated. */
+  nameKey: keyof Strings['templates'];
+  descriptionKey: keyof Strings['templates'];
+  nodes: [labelKey: keyof Strings['templateNodes'], category: EemmCategory, x: number, y: number][];
   edges: [
     sourceIndex: number,
     targetIndex: number,
@@ -31,15 +33,15 @@ interface Spec {
 }
 
 const SPECS: Spec[] = [
-  { id: 'blank', name: 'Blank canvas', description: 'Start from nothing.', nodes: [], edges: [] },
+  { id: 'blank', nameKey: 'blankName', descriptionKey: 'blankDescription', nodes: [], edges: [] },
   {
     id: 'abc',
-    name: 'Three-term contingency',
-    description: 'The starting scaffold: context, internal response, consequence. Build outward from here.',
+    nameKey: 'abcName',
+    descriptionKey: 'abcDescription',
     nodes: [
-      ['Trigger or situation', 'context', 120, 120],
-      ['Thought or feeling', 'cognition', 120, 300],
-      ['What I do', 'overtBehaviour', 120, 480],
+      ['abcTrigger', 'context', 120, 120],
+      ['abcThought', 'cognition', 120, 300],
+      ['abcAction', 'overtBehaviour', 120, 480],
     ],
     edges: [
       [0, 1, 'increases', 2, 'neutral'],
@@ -48,15 +50,15 @@ const SPECS: Spec[] = [
   },
   {
     id: 'worry-sleep',
-    name: 'Worry and sleep cycle',
-    description: 'A worked example. Useful for showing what a reinforcing loop looks like.',
+    nameKey: 'worryName',
+    descriptionKey: 'worryDescription',
     nodes: [
-      ['Criticism at work', 'context', 100, 60],
-      ['Worry about job security', 'cognition', 360, 220],
-      ['Difficulty sleeping', 'biophysiological', 620, 130],
-      ['Fatigue', 'biophysiological', 620, 360],
-      ['Exercise', 'overtBehaviour', 340, 480],
-      ['Social withdrawal', 'sociocultural', 100, 340],
+      ['worryCriticism', 'context', 100, 60],
+      ['worryJobSecurity', 'cognition', 360, 220],
+      ['worrySleep', 'biophysiological', 620, 130],
+      ['worryFatigue', 'biophysiological', 620, 360],
+      ['worryExercise', 'overtBehaviour', 340, 480],
+      ['worryWithdrawal', 'sociocultural', 100, 340],
     ],
     edges: [
       [0, 1, 'increases', 3, 'neutral'],
@@ -73,15 +75,15 @@ const SPECS: Spec[] = [
   },
   {
     id: 'low-mood',
-    name: 'Low mood and withdrawal',
-    description: 'A common behavioural activation pattern. Put it in the person own words before using it.',
+    nameKey: 'moodName',
+    descriptionKey: 'moodDescription',
     nodes: [
-      ['Low mood', 'affect', 380, 120],
-      ['Staying home', 'overtBehaviour', 620, 280],
-      ['Fewer things that matter to me', 'motivation', 380, 440],
-      ['I am a burden', 'self', 120, 280],
-      ['Contact with friends', 'sociocultural', 620, 500],
-      ['Noticing small good moments', 'attention', 120, 500],
+      ['moodLow', 'affect', 380, 120],
+      ['moodStayingHome', 'overtBehaviour', 620, 280],
+      ['moodFewerThings', 'motivation', 380, 440],
+      ['moodBurden', 'self', 120, 280],
+      ['moodContact', 'sociocultural', 620, 500],
+      ['moodNoticing', 'attention', 120, 500],
     ],
     edges: [
       [0, 1, 'increases', 3, 'neutral'],
@@ -97,15 +99,15 @@ const SPECS: Spec[] = [
   },
   {
     id: 'chronic-pain',
-    name: 'Chronic pain and avoidance',
-    description: 'A fear-avoidance pattern, with the deconditioning loop that usually maintains it.',
+    nameKey: 'painName',
+    descriptionKey: 'painDescription',
     nodes: [
-      ['Pain', 'biophysiological', 380, 110],
-      ['Fear of making it worse', 'affect', 120, 280],
-      ['Avoiding activity', 'overtBehaviour', 380, 440],
-      ['Deconditioning', 'biophysiological', 640, 280],
-      ['Doing what matters anyway', 'motivation', 640, 500],
-      ['Willingness to feel discomfort', 'affect', 120, 500],
+      ['painPain', 'biophysiological', 380, 110],
+      ['painFear', 'affect', 120, 280],
+      ['painAvoiding', 'overtBehaviour', 380, 440],
+      ['painDeconditioning', 'biophysiological', 640, 280],
+      ['painDoingAnyway', 'motivation', 640, 500],
+      ['painWillingness', 'affect', 120, 500],
     ],
     edges: [
       [0, 1, 'increases', 3, 'neutral'],
@@ -127,21 +129,31 @@ export interface TemplateInfo {
 }
 
 export function listTemplates(): TemplateInfo[] {
-  return SPECS.map(({ id, name, description }) => ({ id, name, description }));
+  const strings = t();
+  return SPECS.map(({ id, nameKey, descriptionKey }) => ({
+    id,
+    name: strings.templates[nameKey],
+    description: strings.templates[descriptionKey],
+  }));
 }
 
 export function buildTemplate(id: string): PbtNetwork | null {
   const spec = SPECS.find((s) => s.id === id);
   if (!spec) return null;
 
-  const net = createNetwork(spec.name);
+  const strings = t();
+  const net = createNetwork(strings.templates[spec.nameKey]);
   net.meta.description =
     spec.id === 'blank'
       ? undefined
-      : `${spec.description} This is a starting point, not a formulation. Replace the labels with the person's own words.`;
+      : `${strings.templates[spec.descriptionKey]} ${strings.templateNote}`;
 
-  const nodes = spec.nodes.map(([label, category, x, y]) =>
-    createNode({ label, category, position: { x, y } }),
+  // The labels are snapshotted into the network at load time, in the language
+  // that was active. They are ordinary editable content from that point on —
+  // switching language later must not rewrite a map someone has started
+  // working on.
+  const nodes = spec.nodes.map(([labelKey, category, x, y]) =>
+    createNode({ label: strings.templateNodes[labelKey], category, position: { x, y } }),
   );
   net.nodes = nodes;
   net.edges = spec.edges

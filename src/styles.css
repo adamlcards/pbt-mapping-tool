@@ -138,6 +138,30 @@ body {
 }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
+/* A second, quieter row of tabs inside one tab body. Pills rather than
+   underlines, so the two levels never read as the same control. */
+.subtabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 10px; }
+.subtab {
+  font: inherit; font-size: 11.5px; cursor: pointer; padding: 4px 10px; min-height: 28px;
+  border: 1px solid var(--border); background: none; color: var(--muted); border-radius: 999px;
+}
+.subtab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+/* ---------- language picker ---------- */
+
+.lang-list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.lang-item {
+  width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+  font: inherit; text-align: start; cursor: pointer; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 8px; background: none; color: inherit;
+}
+.lang-item:hover { background: var(--hover); }
+.lang-item.active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+/* The native name is the thing being scanned for, so it carries the weight. */
+.lang-native { font-size: 14px; font-weight: 600; }
+.lang-item .chip { margin: 2px 0 0; }
+
 .stat-line { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
 .summary-line { margin: 0 0 10px; font-size: 14px; }
 .muted { color: var(--muted); }

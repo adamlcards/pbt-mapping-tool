@@ -1,3 +1,4 @@
+import { t } from '../i18n/strings';
 /**
  * The Extended Evolutionary Meta-Model (EEMM) taxonomy, as set out in the
  * Process-Based Therapy literature (Hayes, Hofmann & Ciarrochi).
@@ -26,14 +27,23 @@ export type EemmCategory = (typeof EEMM_CATEGORIES)[number];
 
 export interface CategoryMeta {
   id: EemmCategory;
+  /**
+   * English label, kept as the stable identity of the category for exports,
+   * tests and debugging. What a *user* sees comes from `categoryLabel()`, which
+   * reads the active language. Do not render this directly.
+   */
   label: string;
-  /** Printed in bold inside the box, following the textbook figures. */
+  /**
+   * English prefix printed in bold inside the box. Same rule as `label`: the
+   * drawn text comes from `categoryPrefix()`.
+   */
   prefix: string;
   group: 'dimension' | 'level' | 'other';
   colour: string;
   border: string;
   /** Context boxes get rounded corners; processes are square. */
   isContext: boolean;
+  /** English hint. Rendered via `categoryHint()`. */
   hint: string;
 }
 
@@ -177,15 +187,38 @@ function dim(hex: string, amount: number): string {
   return `#${[0, 2, 4].map((i) => to(i).toString(16).padStart(2, '0')).join('')}`;
 }
 
+/**
+ * The user-facing words for a category, in whatever language is active.
+ *
+ * Split from `CATEGORY_META` rather than translated in place because the
+ * colours, shapes and grouping are the same in every language and only the
+ * words change — and because exports and tests need a stable English name to
+ * key on regardless of what the interface is currently showing.
+ */
+export function categoryLabel(id: EemmCategory): string {
+  return t().category[id].label;
+}
+
+export function categoryPrefix(id: EemmCategory): string {
+  return t().category[id].prefix;
+}
+
+export function categoryHint(id: EemmCategory): string {
+  return t().category[id].hint;
+}
+
+export function strengthLabel(s: Strength): string {
+  return t().strength[s];
+}
+
+export function valenceLabelOf(v: LinkValence): string {
+  return t().valence[v];
+}
+
 export function categoriesByGroup(): { group: string; items: CategoryMeta[] }[] {
   const order: CategoryMeta['group'][] = ['other', 'dimension', 'level'];
-  const titles: Record<CategoryMeta['group'], string> = {
-    dimension: 'Psychological dimensions',
-    level: 'Levels',
-    other: 'Context and unclassified',
-  };
   return order.map((g) => ({
-    group: titles[g],
+    group: t().categoryGroup[g],
     items: EEMM_CATEGORIES.map((c) => CATEGORY_META[c]).filter((m) => m.group === g),
   }));
 }

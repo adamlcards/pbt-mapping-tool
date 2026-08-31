@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { t } from '../i18n/strings';
 
 /**
  * Keeps one broken part from taking down the whole tool.
@@ -38,11 +39,11 @@ export class ErrorBoundary extends Component<Props, State> {
         <h3>{this.props.fallbackTitle}</h3>
         <p>{this.props.fallbackHint}</p>
         <details>
-          <summary>Technical detail</summary>
+          <summary>{t().error.technicalDetail}</summary>
           <pre>{this.state.error.message}</pre>
         </details>
         <button className="btn" onClick={() => this.setState({ error: null })}>
-          Try again
+          {t().action.tryAgain}
         </button>
       </div>
     );

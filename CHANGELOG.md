@@ -28,6 +28,13 @@ this project uses [semantic versioning](https://semver.org/).
   (toolbar, or M). Only ratings that were actually given are shown.
 
 ### Fixed
+- **The toolbar survives translation.** Its three groups are sized to their
+  content, and the longer labels in German, Dutch, Malay, Spanish and Russian
+  pushed the third group onto a row of its own. The rows within each group are
+  now balanced by meaning — what changes the map against what changes only the
+  view; where a map comes from against how you learn and configure the tool —
+  so no group is twice the width of its neighbour. Every language now renders
+  in the same two rows English does.
 - **Organise is now undoable.** It wrote the new positions without recording an
   undo step at all, so Ctrl+Z after Organise reverted whatever you did *before*
   it — and brought the old layout back with it. It is now one undo step, and

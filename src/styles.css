@@ -74,8 +74,12 @@ body {
 
 .divider { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
 
+/* 10px of side padding rather than 12: two pixels a button, across the ~13
+   buttons on the toolbar's widest rows, is most of a button's worth of width
+   reclaimed. Enough to keep the longest languages on two rows, and small
+   enough not to read as cramped in the shortest. */
 .btn {
-  font: inherit; font-size: 13px; padding: 7px 12px; min-height: 36px;
+  font: inherit; font-size: 13px; padding: 7px 10px; min-height: 36px;
   border: 1px solid var(--border); background: var(--surface); color: var(--text);
   border-radius: var(--radius); cursor: pointer; white-space: nowrap;
 }
@@ -481,9 +485,25 @@ kbd {
 .toolbar {
   display: flex; align-items: flex-start; gap: 0;
   padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border);
+  /*
+   * `nowrap` is the whole fix, and it is not optional.
+   *
+   * Flexbox breaks lines using each item's *unshrunk* width, and only then
+   * shrinks what is on each line. So with `wrap`, a toolbar too wide for its
+   * three columns pushes the third onto a row of its own before it ever
+   * considers making a column narrower — no amount of `flex-shrink` or
+   * `min-width: 0` can prevent that, because shrinking happens after the
+   * decision to wrap, not instead of it.
+   *
+   * With `nowrap` the columns have to shrink, so the buttons wrap *within*
+   * their own group. The toolbar gets one row taller in the long languages
+   * instead of sprouting a detached row, and the left/centre/right grouping
+   * survives translation.
+   */
+  flex-wrap: nowrap;
 }
 .tb-col { display: flex; flex-direction: column; gap: 6px; }
-.tb-row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.tb-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 
 /*
  * The three columns must SHRINK before the toolbar wraps.
@@ -501,17 +521,26 @@ kbd {
  * below its content's min-content width without it, and every button is
  * `white-space: nowrap`.
  */
-.tb-left { flex: 0 1 auto; min-width: 0; padding-right: 12px; }
+/*
+ * `min-width: 0` is required as well: without it a flex item refuses to shrink
+ * below its min-content width, and every button is `white-space: nowrap`, so
+ * min-content is the widest single button and the row would overflow instead.
+ *
+ * The shrink factors rank the groups by what they cost to lose. The outer two
+ * give ground first (2); the centre holds the drawing tools that get used on
+ * every click, so it shrinks last and least (1).
+ */
+.tb-left { flex: 0 2 auto; min-width: 0; padding-right: 12px; }
 .tb-centre {
   flex: 1 1 auto; min-width: 0; align-items: center;
   border-left: 1px solid var(--border); border-right: 1px solid var(--border);
   padding: 0 12px;
 }
 .tb-centre .tb-row { justify-content: center; }
-/* `margin-left: auto` is the belt to the shrinking braces: if the toolbar ever
-   does wrap anyway, the right-hand group stays right-aligned instead of
-   jumping to the left margin. */
-.tb-right { flex: 0 1 auto; min-width: 0; margin-left: auto; padding-left: 12px; }
+.tb-right { flex: 0 2 auto; min-width: 0; padding-left: 12px; }
+/* Keep each group packed against its own outer edge, so the three read as three
+   even once their buttons have wrapped onto a second or third line. */
+.tb-left .tb-row { justify-content: flex-start; }
 .tb-right .tb-row { justify-content: flex-end; }
 
 .alt-direction {
@@ -531,8 +560,8 @@ kbd {
   .toolbar { flex-wrap: wrap; justify-content: center; gap: 8px; }
   .tb-col { flex: 0 0 auto; align-items: center; }
   .tb-centre { border: none; padding: 0; }
-  .tb-left, .tb-right { padding: 0; margin-left: 0; }
-  .tb-row, .tb-right .tb-row { justify-content: center; }
+  .tb-left, .tb-right { padding: 0; }
+  .tb-row, .tb-left .tb-row, .tb-right .tb-row { justify-content: center; }
 }
 
 /* The canvas follows the theme like everything else. Box hues are preserved in

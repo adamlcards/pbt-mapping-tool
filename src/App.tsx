@@ -481,9 +481,6 @@ export default function App() {
             <button className="btn" onClick={store.redo} disabled={!store.canRedo()} title={s.tooltip.redo}>
               ↷ {s.action.redo}
             </button>
-            <button className="btn" onClick={() => graphApi.current?.fit()} title={s.tooltip.fit}>
-              {s.action.fit}
-            </button>
             <button className="btn" onClick={() => graphApi.current?.tidy()} title={s.tooltip.organise}>
               {s.action.organise}
             </button>
@@ -491,7 +488,17 @@ export default function App() {
               {s.action.clear}
             </button>
           </div>
+          {/* Everything here changes only how the map is displayed to you, not
+              the map itself — which is why Fit view sits with the toggles and
+              not with Undo/Organise/Clear above. Splitting the two rows by that
+              rule also happens to balance their widths, and an unbalanced pair
+              is what made the toolbar sprawl once the labels were translated:
+              a column is as wide as its widest row, so slack in the short row
+              is wasted space. */}
           <div className="tb-row">
+            <button className="btn" onClick={() => graphApi.current?.fit()} title={s.tooltip.fit}>
+              {s.action.fit}
+            </button>
             <button
               className={`btn${showGrid ? ' active' : ''}`}
               onClick={() => setShowGrid(!showGrid)}
@@ -612,6 +619,8 @@ export default function App() {
         </div>
 
         <div className="tb-col tb-right">
+          {/* Where a map comes from and where it goes: load one, save one, send
+              one, or start from a worked example. */}
           <div className="tb-row">
             <button className="btn" onClick={() => fileInput.current?.click()} title={s.tooltip.import}>
               {s.action.import}
@@ -621,6 +630,21 @@ export default function App() {
             </button>
             <button className="btn" onClick={() => setDialog({ kind: 'share' })} title={s.tooltip.share}>
               {s.action.share}
+            </button>
+            <button className="btn" onClick={() => setDialog({ kind: 'templates' })} title={s.tooltip.templates}>
+              {s.action.templates}
+            </button>
+          </div>
+          {/* Learning the tool, then setting it up. Six buttons against three
+              was what made this column the widest of the three in every
+              language whose labels run longer than English's. */}
+          <div className="tb-row">
+            <button
+              className={`btn${guided ? ' active' : ''}`}
+              onClick={() => setGuided(!guided)}
+              title={s.tooltip.guided}
+            >
+              {s.action.guided}
             </button>
             <button className="btn" onClick={() => setDialog({ kind: 'help' })} title={s.tooltip.help}>
               {s.action.help}
@@ -634,18 +658,6 @@ export default function App() {
               title={theme === 'dark' ? s.tooltip.themeToLight : s.tooltip.themeToDark}
             >
               {theme === 'dark' ? `☀ ${s.action.themeLight}` : `☾ ${s.action.themeDark}`}
-            </button>
-          </div>
-          <div className="tb-row">
-            <button className="btn" onClick={() => setDialog({ kind: 'templates' })} title={s.tooltip.templates}>
-              {s.action.templates}
-            </button>
-            <button
-              className={`btn${guided ? ' active' : ''}`}
-              onClick={() => setGuided(!guided)}
-              title={s.tooltip.guided}
-            >
-              {s.action.guided}
             </button>
             {/* The picker sits with the other whole-app settings rather than in
                 a dialog behind Help: someone who cannot read the interface

@@ -120,9 +120,9 @@ body {
 
 .side-panel, .guided {
   flex: 0 0 400px; width: 400px; max-width: 100%; background: var(--surface);
-  border-left: 1px solid var(--border); overflow-y: auto; overflow-x: hidden; padding: 14px;
+  border-inline-start: 1px solid var(--border); overflow-y: auto; overflow-x: hidden; padding: 14px;
 }
-.guided { flex-basis: 340px; border-left: none; border-right: 1px solid var(--border); order: -1; width: 340px; }
+.guided { flex-basis: 340px; border-inline-start: none; border-inline-end: 1px solid var(--border); order: -1; width: 340px; }
 
 /* Long node labels in tables and lists must wrap, not force the panel wider. */
 .side-panel table, .side-panel ul { max-width: 100%; }
@@ -173,13 +173,13 @@ body {
 .neg { color: var(--danger); }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.data-table th, .data-table td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--border); }
+.data-table th, .data-table td { text-align: start; padding: 6px 4px; border-bottom: 1px solid var(--border); }
 .data-table thead th { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.03em; }
 .data-table tbody tr:hover { background: var(--hover); }
-.data-table td { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table td { text-align: end; font-variant-numeric: tabular-nums; }
 
 .chip {
-  display: inline-block; font-size: 10px; padding: 1px 6px; margin-left: 6px;
+  display: inline-block; font-size: 10px; padding: 1px 6px; margin-inline-start: 6px;
   border-radius: 999px; background: var(--hover); color: var(--muted); font-weight: 500;
 }
 .chip.warn { background: #fde9e7; color: var(--danger); }
@@ -215,7 +215,7 @@ body {
 .struct-list li { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); }
 .struct-item {
   flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
-  font: inherit; text-align: left; background: none; border: none; cursor: pointer;
+  font: inherit; text-align: start; background: none; border: none; cursor: pointer;
   padding: 8px 6px; border-radius: var(--radius); min-height: 44px;
 }
 .struct-item:hover { background: var(--hover); }
@@ -225,7 +225,7 @@ body {
 
 .swatch {
   display: inline-block; width: 12px; height: 12px; border-radius: 3px;
-  border: 1px solid; vertical-align: middle; margin-right: 6px;
+  border: 1px solid; vertical-align: middle; margin-inline-end: 6px;
 }
 
 .structure h3, .snapshots h3 { font-size: 13px; text-transform: uppercase; color: var(--muted); margin: 14px 0 4px; }
@@ -275,7 +275,7 @@ body {
 .modal-head h2 { margin: 0; font-size: 16px; }
 .modal-body { padding: 16px; overflow-y: auto; }
 .modal-body h3 { font-size: 14px; margin: 16px 0 6px; }
-.modal-body ul { padding-left: 20px; font-size: 14px; }
+.modal-body ul { padding-inline-start: 20px; font-size: 14px; }
 .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
 
 .field { display: block; margin-bottom: 14px; }
@@ -477,7 +477,7 @@ kbd {
   color: var(--accent); padding: 6px 0; min-height: 36px;
 }
 .advanced {
-  border-left: 2px solid var(--border); padding-left: 12px; margin-top: 6px;
+  border-inline-start: 2px solid var(--border); padding-inline-start: 12px; margin-top: 6px;
 }
 
 /* ---------- toolbar grouping ---------- */
@@ -530,14 +530,14 @@ kbd {
  * give ground first (2); the centre holds the drawing tools that get used on
  * every click, so it shrinks last and least (1).
  */
-.tb-left { flex: 0 2 auto; min-width: 0; padding-right: 12px; }
+.tb-left { flex: 0 2 auto; min-width: 0; padding-inline-end: 12px; }
 .tb-centre {
   flex: 1 1 auto; min-width: 0; align-items: center;
   border-left: 1px solid var(--border); border-right: 1px solid var(--border);
   padding: 0 12px;
 }
 .tb-centre .tb-row { justify-content: center; }
-.tb-right { flex: 0 2 auto; min-width: 0; padding-left: 12px; }
+.tb-right { flex: 0 2 auto; min-width: 0; padding-inline-start: 12px; }
 /* Keep each group packed against its own outer edge, so the three read as three
    even once their buttons have wrapped onto a second or third line. */
 .tb-left .tb-row { justify-content: flex-start; }

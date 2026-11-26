@@ -13,6 +13,8 @@ import { ja } from './locales/ja';
 import { ms } from './locales/ms';
 import { ko } from './locales/ko';
 import { tr } from './locales/tr';
+import { he } from './locales/he';
+import { ar } from './locales/ar';
 
 interface LocaleEntry {
   strings: PartialStrings;
@@ -56,4 +58,6 @@ export const LOCALE_CATALOGUE = {
   'ms': { strings: ms, nativeName: 'Bahasa Melayu', englishName: 'Malay', dir: 'ltr', reviewed: false },
   'ko': { strings: ko, nativeName: '한국어', englishName: 'Korean', dir: 'ltr', reviewed: false },
   'tr': { strings: tr, nativeName: 'Türkçe', englishName: 'Turkish', dir: 'ltr', reviewed: false },
+  he: { strings: he, nativeName: 'עברית', englishName: 'Hebrew', dir: 'rtl', reviewed: false },
+  ar: { strings: ar, nativeName: 'العربية', englishName: 'Arabic', dir: 'rtl', reviewed: false },
 } as const satisfies Record<string, LocaleEntry>;
